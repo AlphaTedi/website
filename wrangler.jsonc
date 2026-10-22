@@ -1,6 +1,6 @@
 {
-  // Cloudflare Workers, static assets only: publishes the site/ folder
+  // drafts branch: serves the whole repo so every version can be previewed
   "name": "otto-site",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "./site", "not_found_handling": "404-page" }
+  "assets": { "directory": "./" }
 }

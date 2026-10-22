@@ -2,5 +2,5 @@
   // drafts branch: serves the whole repo so every version can be previewed
   "name": "otto-site",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "./" }
+  "assets": { "directory": "./preview" }
 }

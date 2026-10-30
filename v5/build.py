@@ -1,16 +1,18 @@
-"""Builds site/drafts/v5/index.html (the Verity-style draft). Run from anywhere: python3 v5/build.py"""
+"""Builds the home page, site/index.html (and its copy at site/drafts/v5/). Run from anywhere: python3 v5/build.py"""
 import json, pathlib, re
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-OUT = REPO / 'site/drafts/v5/index.html'
+OUT = REPO / 'site/index.html'                 # the home page of ottotofive.com
+DRAFT = REPO / 'site/drafts/v5/index.html'      # the same page, kept at /drafts/v5/ (noindex)
+A = '/assets/home/'                              # its CSS, JS, fonts and the Lion wallpaper
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '8'
+V = '9'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
 FAQ = dict(re.findall(r'<summary>(.*?)</summary><p>(.*?)</p>', P['FAQ']))
-FAQ = {q: a.replace('style="color:var(--lilac)"', '') for q, a in FAQ.items()}
+FAQ = {q: a.replace(' style="color:var(--lilac)"', '').replace('href="privacy.html"', 'href="/privacy.html"') for q, a in FAQ.items()}
 FAQ_TABS = [
     ('Basics', ['Is Otto really free?', 'Does my Mac need a notch?', 'Which languages does it speak?']),
     ('Privacy', ['Where is my data?', 'What does the anonymous usage data include?', 'Which calendars does it read?']),
@@ -76,7 +78,7 @@ HERO = f'''
     <div class="product" id="product">
       <div class="mac" role="group" aria-label="Otto open in the notch of a Mac screen">
         <div class="mac-screen"><div class="vd">
-          <img class="wall" src="lion.jpg" alt="" width="2560" height="1600">
+          <img class="wall" src="{A}lion.jpg" alt="" width="2560" height="1600">
           <div class="menubar" aria-hidden="true"><div>{APPLE}<b>Otto</b><span>File</span><span>Edit</span><span>View</span></div><div><span>Thu Oct 8</span><span>08:08</span></div></div>
           <div class="vd-otto"><div id="hero-otto"></div></div>
         </div></div>
@@ -161,7 +163,7 @@ MODES = f'''
     </div>
     <div class="mode-stage rv" data-mode="notch">
       <div class="mode-screen">
-        <img class="wall" src="lion.jpg" alt="" width="2560" height="1600" loading="lazy">
+        <img class="wall" src="{A}lion.jpg" alt="" width="2560" height="1600" loading="lazy">
         <div class="menubar" aria-hidden="true"><div>{APPLE}<b>Otto</b></div><div><span>Thu Oct 8</span><span>08:08</span></div></div>
         <i class="hw-notch" aria-hidden="true"></i>
         <div class="m-notch"><div class="fit" data-w="620" data-h="430"><div class="demo" data-demo="mode-notch"></div></div></div>
@@ -290,15 +292,21 @@ html = f'''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex">
 <title>Otto · Your day lives in the notch</title>
-<meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away.">
+<meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away. No account, everything stays on your Mac.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Otto · Your day lives in the notch">
+<meta property="og:description" content="A free Mac app for to-dos, notes and meetings, one hover away.">
+<meta property="og:image" content="https://ottotofive.com/assets/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FCF6F3">
-<link rel="icon" href="../v3/shared/otto-icon-512.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/HostGrotesk-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../v3/shared/otto-ui.css?v={V}">
-<link rel="stylesheet" href="v5.css?v={V}">
+<link rel="preload" href="{A}fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{A}otto-ui.css?v={V}">
+<link rel="stylesheet" href="{A}home.css?v={V}">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -322,12 +330,13 @@ html = f'''<!doctype html>
 {FOOTER}
 
 <script>window.OTTO_T_PATH = "{T}";</script>
-<script src="lenis.min.js?v={V}"></script>
-<script src="../v3/shared/otto-ui.js?v={V}"></script>
-<script src="../v3/shared/common.js?v={V}"></script>
-<script src="v5.js?v={V}"></script>
+<script src="{A}lenis.min.js?v={V}"></script>
+<script src="{A}otto-ui.js?v={V}"></script>
+<script src="{A}common.js?v={V}"></script>
+<script src="{A}home.js?v={V}"></script>
 </body>
 </html>
 '''
 OUT.write_text(html)
-print('wrote', OUT.relative_to(REPO), len(html), 'bytes;', len(FAQ), 'faq;', len(LOG), 'log')
+DRAFT.write_text(html.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex">', 1))
+print('wrote', OUT.relative_to(REPO), 'and', DRAFT.relative_to(REPO), len(html), 'bytes')

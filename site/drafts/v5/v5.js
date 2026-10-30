@@ -76,7 +76,7 @@
   /* ================= smooth scroll ================= */
   let lenis = null;
   if (!reduce && window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.1, autoRaf: true, anchors: { offset: -20 }, allowNestedScroll: true });
+    lenis = new window.Lenis({ lerp: 0.085, wheelMultiplier: 0.85, touchMultiplier: 0.9, autoRaf: true, anchors: { offset: -20 }, allowNestedScroll: true });
     window.lenis = lenis;
   }
 
@@ -89,15 +89,16 @@
      bent by slow low-frequency noise, with a couple of soft glows drifting through it and a 1/255 dither so
      the screen never shows steps. The hero runs it top to bottom; the closing call runs it reversed.
      A CSS gradient with the same stops sits underneath as the fallback. */
-  const RAMP = [[243, 182, 156], [240, 175, 162], [224, 154, 174], [182, 120, 174], [126, 82, 166], [74, 49, 144], [36, 26, 92], [18, 14, 42], [13, 10, 20]];
-  const STOPS = [0, 0.18, 0.31, 0.43, 0.53, 0.63, 0.75, 0.88, 1];
-  function makeLiquid(cv, host, { reverse = false, band = [0, 0.5], follow = true } = {}) {
+  // almost white with a breath of peach, into lilac and violet, into the night
+  const RAMP = [[252, 246, 243], [248, 234, 230], [234, 214, 236], [199, 176, 238], [146, 118, 224], [94, 70, 186], [52, 36, 128], [22, 16, 52], [13, 10, 20]];
+  const STOPS = [0, 0.14, 0.27, 0.39, 0.5, 0.6, 0.71, 0.84, 1];
+  function makeLiquid(cv, host, { reverse = false, band = [0, 0.5], follow = true, pow = 1 } = {}) {
     if (!cv) return null;
     const gl = cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'low-power' });
     if (!gl) return null;
     const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     const fs = `precision highp float;
-      uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform vec2 uBand;
+      uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform vec2 uBand; uniform float uPow;
       uniform vec3 uC[9]; uniform float uS[9];
       float hash(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
       float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*f*(f*(f*6.-15.)+10.);
@@ -115,14 +116,14 @@
         float t = uTime*.035;
         vec2 q = vec2(fbm(p+vec2(0.,t)), fbm(p+vec2(5.2,1.3)-t));
         float n = fbm(p+1.6*q+vec2(1.7,9.2)+t*.5);
-        float y = clamp(uv.y + (n-.5)*.09, 0., 1.);
+        float y = pow(clamp(uv.y + (n-.5)*.09, 0., 1.), uPow);
         vec3 col = ramp(y);
         float zone = smoothstep(uBand.x-.12, uBand.x+.1, uv.y)*(1.-smoothstep(uBand.y-.1, uBand.y+.14, uv.y));
-        col = mix(col, vec3(1.,.83,.75), zone*smoothstep(.45,.85,q.x)*.22);
-        col = mix(col, vec3(.62,.5,.95), zone*smoothstep(.5,.9,q.y)*.2);
+        col = mix(col, vec3(1.,.9,.86), zone*smoothstep(.45,.85,q.x)*.16);
+        col = mix(col, vec3(.8,.72,.98), zone*smoothstep(.5,.9,q.y)*.16);
         vec2 m = vec2(uMouse.x*asp, uMouse.y);
         float d = distance(vec2(uv.x*asp, uv.y), m);
-        col = mix(col, vec3(1.,.86,.8), exp(-d*d*10.)*.16*zone);
+        col = mix(col, vec3(1.,.93,.9), exp(-d*d*10.)*.12*zone);
         col += (hash(gl_FragCoord.xy + fract(uTime)*91.7) - .5) / 255.;
         gl_FragColor = vec4(col, 1.);
       }`;
@@ -138,7 +139,7 @@
     const cols = reverse ? RAMP.slice().reverse() : RAMP, stops = reverse ? STOPS.map((x) => 1 - x).reverse() : STOPS;
     gl.uniform3fv(U('uC'), new Float32Array(cols.flat().map((x) => x / 255)));
     gl.uniform1fv(U('uS'), new Float32Array(stops));
-    gl.uniform2f(U('uBand'), band[0], band[1]);
+    gl.uniform2f(U('uBand'), band[0], band[1]); gl.uniform1f(U('uPow'), pow);
     const uRes = U('uRes'), uTime = U('uTime'), uMouse = U('uMouse');
     let on = false, raf = 0, t0 = performance.now(), mouse = [0.5, (band[0] + band[1]) / 2], mTarget = mouse.slice();
     const size = () => {
@@ -162,7 +163,7 @@
   const heroEl = $('.hero');
   const liquids = [
     makeLiquid($('#liquid'), heroEl, { band: [0, 0.45] }),
-    makeLiquid($('#liquid-fin'), $('.finale'), { reverse: true, band: [0.55, 1] }),
+    makeLiquid($('#liquid-fin'), $('.finale'), { reverse: true, band: [0.6, 1], pow: 1.5 }),   // the light comes in lower, under the button
   ].filter(Boolean);
 
   /* ================= hero: the Mac straightens up, the notch opens ================= */
@@ -175,24 +176,38 @@
     $('#hero-otto').insertAdjacentHTML('beforeend', UI.Otto.prototype.meetHTML.call({}));
     watch(product, (v) => { heroVisible = v; if (v && notchState === 'open') heroLoop(); }, { threshold: 0.05 });
   }
+  // The hero is pinned for a stretch of scroll (M.pin). In that stretch the Mac rises from where it sits
+  // under the copy (y0) to just under the top edge (y1), straightens and stops there with the notch open;
+  // then the page moves on. The Mac is sized so it always fits in the window once it has risen.
+  const stage = $('.hero-stage'), copy = $('.hero-copy'), pwrap = $('.product-wrap');
   function layoutHero() {
     const mobile = innerWidth < 640;
     M.mobile = mobile;
     const vdw = mobile ? 520 : 1440, vdh = mobile ? 640 : 900;
     product.style.setProperty('--vdw', vdw); product.style.setProperty('--vdh', vdh);
     product.classList.toggle('is-m', mobile);
+    const vh = stage.clientHeight || innerHeight;
+    M.y1 = mobile ? 72 : 80;
+    const bezel = mobile ? 12 : 20;
+    const fitW = (vh - M.y1 - 28 - bezel) * vdw / vdh;
+    product.style.width = Math.round(Math.min(1312, innerWidth - (mobile ? 24 : 48), fitW)) + 'px';
     vd.style.transform = `scale(${screenEl.clientWidth / vdw})`;
     const card = $('#hero-otto .ot-mcard'); if (card) card.style.width = Math.min(596, vdw - 24) + 'px';
+    M.y0 = pwrap.offsetTop;
+    M.pin = Math.round(mobile ? Math.max(460, vh * 0.75) : Math.max(560, vh * 0.95));
+    if (!reduce) heroEl.style.height = (vh + M.pin) + 'px';
   }
   function heroFrame() {
-    const span = M.mobile ? 340 : 520;
-    const q = reduce ? 1 : clamp(scrollY / span);
+    const p = reduce ? 1 : clamp(scrollY / M.pin);
+    const rise = ease(clamp(p / 0.72));
     if (!reduce) {
-      const rot = lerp(M.mobile ? 10 : 16, 0, q), sc = lerp(M.mobile ? 0.96 : 0.93, M.mobile ? 1.02 : 1.04, q), ty = lerp(0, M.mobile ? -50 : -120, q);
+      const rot = lerp(M.mobile ? 10 : 16, 0, rise), sc = lerp(M.mobile ? 0.96 : 0.93, 1, rise), ty = lerp(0, M.y1 - M.y0, rise);
       product.style.transform = `perspective(1400px) translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(4)}) rotateX(${rot.toFixed(3)}deg)`;
+      copy.style.transform = `translate3d(0, ${(ty * 0.4).toFixed(1)}px, 0)`;
+      copy.style.opacity = (1 - clamp(rise / 0.55)).toFixed(3);
     }
     if (!otto) return;
-    const st = q < 0.3 ? 'idle' : q < 0.46 ? 'hover' : 'open';
+    const st = p < 0.36 ? 'idle' : p < 0.5 ? 'hover' : 'open';
     if (st !== notchState) {
       notchState = st;
       if (!otto.touched || st === 'open') otto.setState(st);
@@ -567,7 +582,7 @@
 
   function init() {
     $$('.eyes-logo').forEach((el) => O3.OttoLogo(el, { fill: 'currentColor', reach: 0.6 }));
-    buildHero(); layoutHero();
+    buildHero(); layoutHero(); liquids.forEach((l) => l.size());
     fitAll();
     todosViz(); noteViz(); meetViz();
     tour(); modes(); carousel(); faq();
@@ -580,7 +595,7 @@
       clearTimeout(t); t = setTimeout(() => liquids.forEach((l) => l.size()), 200);
     });
     new ResizeObserver(() => { layoutFooter(); }).observe(footer);
-    if (document.fonts) document.fonts.ready.then(() => { layoutFooter(); liquids.forEach((l) => l.size()); ask(); });
+    if (document.fonts) document.fonts.ready.then(() => { layoutHero(); layoutFooter(); liquids.forEach((l) => l.size()); ask(); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

@@ -5,7 +5,7 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 OUT = REPO / 'site/drafts/v5/index.html'
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '4'
+V = '5'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
@@ -65,6 +65,7 @@ def btn(label, cls='', href=DMG, apple=True, arrow=False):
 HERO = f'''
 <section class="hero" id="top">
   <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas></div>
+  <div class="hero-stage">
   <div class="hero-copy">
     <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
@@ -81,6 +82,7 @@ HERO = f'''
         </div></div>
       </div>
     </div>
+  </div>
   </div>
 </section>'''
 
@@ -259,9 +261,9 @@ FOOTER = f'''
 <footer class="site-footer" id="footer">
   <div class="wrap foot-top">
     <div class="foot-about">
-      <p class="by">Free <span>·</span> Made by Marcello Zanetta</p>
-      <p class="legal">Mac and macOS are trademarks of Apple Inc.<br>Google Meet is a trademark of Google LLC.</p>
-      <p class="copy">© 2026 Otto</p>
+      <p>Made by Marcello Zanetta</p>
+      <p>Mac and macOS are trademarks of Apple Inc.<br>Google Meet is a trademark of Google LLC.</p>
+      <p>© 2026 Otto</p>
     </div>
     <nav class="foot-cols" aria-label="Footer">
       <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
@@ -291,7 +293,7 @@ html = f'''<!doctype html>
 <meta name="robots" content="noindex">
 <title>Otto · Your day lives in the notch</title>
 <meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away.">
-<meta name="theme-color" content="#F3B69C">
+<meta name="theme-color" content="#FCF6F3">
 <link rel="icon" href="../v3/shared/otto-icon-512.png">
 <link rel="preload" href="/assets/fonts/HostGrotesk-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>

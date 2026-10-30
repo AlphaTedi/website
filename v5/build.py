@@ -5,7 +5,7 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 OUT = REPO / 'site/drafts/v5/index.html'
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '5'
+V = '6'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
@@ -67,7 +67,7 @@ HERO = f'''
   <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas></div>
   <div class="hero-stage">
   <div class="hero-copy">
-    <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
+    <div class="hero-logo intro-in" style="--d:0s" aria-label="Otto"></div>
     <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
     <p class="lead intro-in" style="--d:.3s">Otto puts your to-dos, notes and next meeting in the notch of your MacBook. Hover, and your day is there.</p>
     <div class="cta-row intro-in" style="--d:.45s">{btn('Download for Mac', 'dark big')}</div>

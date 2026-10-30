@@ -582,6 +582,7 @@
 
   function init() {
     $$('.eyes-logo').forEach((el) => O3.OttoLogo(el, { fill: 'currentColor', reach: 0.6 }));
+    const hl = $('.hero-logo'); if (hl) O3.OttoLogo(hl, { fill: 'currentColor', reach: 0.45, follow: 0.12 });
     buildHero(); layoutHero(); liquids.forEach((l) => l.size());
     fitAll();
     todosViz(); noteViz(); meetViz();

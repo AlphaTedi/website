@@ -31,6 +31,48 @@
   };
   const ic = (n) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${G[n]}</svg>`;
 
+  /* The dock's own icons: Hugeicons "stroke rounded", 1.5 stroke, exactly the SVGs in the app's Assets.xcassets/Huge */
+  const SQ = 'M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z';
+  const HG = {
+    back: ['M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18'],
+    export: ['M2.99969 17.0002C2.99969 17.9302 2.99969 18.3952 3.10192 18.7767C3.37932 19.8119 4.18796 20.6206 5.22324 20.898C5.60474 21.0002 6.06972 21.0002 6.99969 21.0002L16.9997 21.0002C17.9297 21.0002 18.3947 21.0002 18.7762 20.898C19.8114 20.6206 20.6201 19.8119 20.8975 18.7767C20.9997 18.3952 20.9997 17.9302 20.9997 17.0002', 'M16.4998 11.5002C16.4998 11.5002 13.1856 16.0002 11.9997 16.0002C10.8139 16.0002 7.49976 11.5002 7.49976 11.5002M11.9997 15.0002V3.00016'],
+    bullets: ['M8 5.5L20 5.5', 'M8 12.5L20 12.5', 'M8 19.5L20 19.5',
+      'M4.375 5.5H4.25M4.5 5.5C4.5 5.63807 4.38807 5.75 4.25 5.75C4.11193 5.75 4 5.63807 4 5.5C4 5.36193 4.11193 5.25 4.25 5.25C4.38807 5.25 4.5 5.36193 4.5 5.5Z',
+      'M4.375 12.5H4.25M4.5 12.5C4.5 12.6381 4.38807 12.75 4.25 12.75C4.11193 12.75 4 12.6381 4 12.5C4 12.3619 4.11193 12.25 4.25 12.25C4.38807 12.25 4.5 12.3619 4.5 12.5Z',
+      'M4.375 19.5H4.25M4.5 19.5C4.5 19.6381 4.38807 19.75 4.25 19.75C4.11193 19.75 4 19.6381 4 19.5C4 19.3619 4.11193 19.25 4.25 19.25C4.38807 19.25 4.5 19.3619 4.5 19.5Z'],
+    numbers: ['M11 6L21 6', 'M11 12L21 12', 'M11 18L21 18', 'M3 15H4.5C4.77879 15 4.91819 15 5.03411 15.0231C5.51014 15.1177 5.88225 15.4899 5.97694 15.9659C6 16.0818 6 16.2212 6 16.5C6 16.7788 6 16.9182 5.97694 17.0341C5.88225 17.5101 5.51014 17.8823 5.03411 17.9769C4.91819 18 4.77879 18 4.5 18C4.22121 18 4.08181 18 3.96589 18.0231C3.48986 18.1177 3.11775 18.4899 3.02306 18.9659C3 19.0818 3 19.2212 3 19.5V20.4C3 20.6828 3 20.8243 3.08787 20.9121C3.17574 21 3.31716 21 3.6 21H6', 'M3 3H4.2C4.36569 3 4.5 3.13431 4.5 3.3V9M4.5 9H3M4.5 9H6'],
+    checklist: [SQ, 'M8 12.5L10.5 15L16 9'],
+    bold: ['M5 6C5 4.58579 5 3.87868 5.43934 3.43934C5.87868 3 6.58579 3 8 3H12.5789C15.0206 3 17 5.01472 17 7.5C17 9.98528 15.0206 12 12.5789 12H5V6Z', 'M12.4286 12H13.6667C16.0599 12 18 14.0147 18 16.5C18 18.9853 16.0599 21 13.6667 21H8C6.58579 21 5.87868 21 5.43934 20.5607C5 20.1213 5 19.4142 5 18V12'],
+    link: ['M10 13.229C10.1416 13.4609 10.3097 13.6804 10.5042 13.8828C11.7117 15.1395 13.5522 15.336 14.9576 14.4722C15.218 14.3121 15.4634 14.1157 15.6872 13.8828L18.9266 10.5114C20.3578 9.02184 20.3578 6.60676 18.9266 5.11718C17.4953 3.6276 15.1748 3.62761 13.7435 5.11718L13.03 5.85978', 'M10.9703 18.14L10.2565 18.8828C8.82526 20.3724 6.50471 20.3724 5.07345 18.8828C3.64218 17.3932 3.64218 14.9782 5.07345 13.4886L8.31287 10.1172C9.74413 8.62761 12.0647 8.6276 13.4959 10.1172C13.6904 10.3195 13.8584 10.539 14 10.7708'],
+    code: ['M17 8L18.8398 9.85008C19.6133 10.6279 20 11.0168 20 11.5C20 11.9832 19.6133 12.3721 18.8398 13.1499L17 15', 'M7 8L5.16019 9.85008C4.38673 10.6279 4 11.0168 4 11.5C4 11.9832 4.38673 12.3721 5.16019 13.1499L7 15', 'M14.5 4L9.5 20'],
+    quote: ['M9 6L17 6', 'M9 12L19 12', 'M9 18L17 18', 'M5 3L5 21'],
+    codeBlock: [SQ, 'M9.5 9.5L7.96682 10.8215C7.32228 11.377 7 11.6548 7 12C7 12.3452 7.32227 12.623 7.96682 13.1785L9.5 14.5', 'M14.5 9.5L16.0332 10.8215C16.6777 11.377 17 11.6548 17 12C17 12.3452 16.6777 12.623 16.0332 13.1785L14.5 14.5'],
+  };
+  const hg = (n) => `<svg class="hg" viewBox="0 0 24 24" aria-hidden="true">${HG[n].map((d) => `<path d="${d}"/>`).join('')}</svg>`;
+  // the note editor's bar, as in the app: Back · Aa | lists | bold, link | code, quote, code block · Export
+  const toolsHTML = (attr = '') => `<div class="dk-tools">
+      <span class="dk-rb" ${attr}>${hg('back')}</span>
+      <span class="dk-fb">
+        <b data-t="aa">Aa</b><i></i><span data-t="list">${hg('bullets')}</span><span data-t="num">${hg('numbers')}</span><span data-t="ck">${hg('checklist')}</span><i></i>
+        <span data-t="type">${hg('bold')}</span><span data-t="link">${hg('link')}</span><i></i>
+        <span data-t="code">${hg('code')}</span><span data-t="quote">${hg('quote')}</span><span data-t="block">${hg('codeBlock')}</span>
+      </span>
+      <span class="dk-rb">${hg('export')}</span>
+    </div>`;
+
+  /* the app's meeting card: Join and Snooze only, the people on the right */
+  const meetHTML0 = UI.Otto.prototype.meetHTML;
+  UI.Otto.prototype.meetHTML = function () { return meetHTML0.call(this).replace('<button class="mb">Notes</button>', ''); };
+  /* the open note, as the app lays it out: title, the day, room, then the text; the bar at the foot */
+  UI.Otto.prototype.pageHTML = function () {
+    const n = this.s.notes.find((x) => x.id === this.s.page) || this.s.notes[0];
+    return `<div class="dk-scroll dk-page">
+        <div class="dk-head"><div class="dk-title">${n.title}</div><div class="dk-date">Monday, Oct 12</div></div>
+        <div class="ot-doc"><h5>Agenda</h5><ul><li>Q4 priorities</li><li>Hiring update from <b>Matt</b></li><li>Launch date with Simon</li></ul><p><br></p><p>Draft lives in <code>launch-plan.md</code>.</p></div>
+      </div>
+      <div class="dk-foot" aria-hidden="true"></div>${toolsHTML()}`;
+  };
+
   /* ================= smooth scroll ================= */
   let lenis = null;
   if (!reduce && window.Lenis) {
@@ -40,7 +82,7 @@
 
   /* ================= nav: appears once you scroll ================= */
   const nav = $('#nav');
-  const navFrame = () => nav.classList.toggle('show', scrollY > 80);
+  const navFrame = () => nav.classList.toggle('show', scrollY > 60);
 
   /* ================= hero: a living gradient (WebGL), with a CSS gradient underneath as the fallback ================= */
   const heroEl = $('.hero');
@@ -194,7 +236,7 @@
     const chip = (k, v) => `<span class="dk-chip ${k}">${{ date: ic('calendar'), link: ic('link'), img: ic('image') }[k] || '@'}${v}</span>`;
     const ITEMS = [
       ['Send the proposal to Simon', [], [['date', 'today']]],
-      ['Review the new onboarding', [], [['link', 'figma.com/onboarding']]],
+      ['Review the new flow', [], [['link', 'figma/onboarding']]],
       ['Fix the pricing table', [['img', 'Screenshot']], []],
       ['Call', [], [['at', 'matt']]],
       ['Book the team offsite', [], [['date', 'fri']]],
@@ -242,7 +284,7 @@
   function noteViz() {
     const box = $('[data-viz="note"]'); if (!box) return;
     box.innerHTML = `<div class="ot ot-dock ot-static" style="width:100%"><div class="pane note">
-      <div class="nhead"><b>Monday sync</b><span>Monday, Oct 12</span></div>
+      <div class="dk-page"><div class="dk-head"><div class="dk-title">Monday sync</div><div class="dk-date">Monday, Oct 12</div></div>
       <div class="ot-doc">
         <div class="ln" data-k="h">Agenda</div>
         <div class="ln" data-k="li">Q4 priorities</div>
@@ -250,8 +292,8 @@
         <div class="ln" data-k="li">Launch date with <span class="lk">Simon</span></div>
         <div class="ln" data-k="q">Keep it to fifteen minutes</div>
         <div class="ln">Draft lives in <span class="cd">launch-plan.md</span></div>
-      </div>
-      <div class="tools"><b data-t="aa">Aa</b><i></i><span data-t="list">${ic('list')}</span><span data-t="num">${ic('listOrdered')}</span><span data-t="ck">${ic('listChecks')}</span><i></i><span data-t="type">${ic('type')}</span><span data-t="link">${ic('link')}</span><i></i><span data-t="code">${ic('code')}</span><span data-t="quote">${ic('quote')}</span><span data-t="block">${ic('braces')}</span></div>
+      </div></div>
+      ${toolsHTML()}
     </div></div>`;
     const tool = (k) => $(`[data-t="${k}"]`, box);
     const lines = (k) => $$(`.ln[data-k="${k}"]`, box);
@@ -263,13 +305,13 @@
       ['quote', () => lines('q').forEach((l) => l.classList.add('q'))],
       ['code', () => $('.cd', box).classList.add('on')],
     ];
-    const all = () => { $$('.ln', box).forEach((l) => l.classList.remove('h', 'li', 'q')); $$('.b, .lk, .cd', box).forEach((x) => x.classList.remove('on')); };
+    const clear = () => { $$('.ln', box).forEach((l) => l.classList.remove('h', 'li', 'q')); $$('.b, .lk, .cd', box).forEach((x) => x.classList.remove('on')); };
     if (reduce) { steps.forEach(([, f]) => f()); return; }
     let on = false, running = false;
     const run = async () => {
       if (running) return; running = true;
       while (on) {
-        all(); await sleep(900);
+        clear(); await sleep(900);
         for (const [k, f] of steps) {
           if (!on) break;
           const t = tool(k); t.classList.add('on'); await sleep(260);
@@ -286,15 +328,11 @@
   function meetViz() {
     const box = $('[data-viz="meet"]'); if (!box) return;
     const host = child(box);
-    const o = staticOtto(host, { presence: true, openW: 400 });
+    const o = staticOtto(host, { presence: true, openW: 360 });
     host.insertAdjacentHTML('beforeend', UI.Otto.prototype.meetHTML.call({}));
-    box.insertAdjacentHTML('beforeend', `<div class="upnext"><div class="h">LATER TODAY</div>
-      <div class="ev" style="--c:#F4A9C4"><i></i><b>Lunch with Ana</b><time>12:30</time></div>
-      <div class="ev" style="--c:#8FB8FF"><i></i><b>1:1 with Matt</b><time>15:00</time></div>
-      <div class="ev" style="--c:#C3B1FF"><i></i><b>Launch review</b><time>17:30</time></div></div>
-      <span class="joined">${ic('check')}Joined Design sync</span>`);
+    box.insertAdjacentHTML('beforeend', `<span class="joined">${ic('check')}Joined Design sync</span>`);
     const card = $('.ot-mcard', box), count = $('.ot-presence .count', box), join = $('.mb.join', card), joined = $('.joined', box);
-    card.style.width = '400px';
+    card.style.width = '360px';
     const setCount = (m) => { count.innerHTML = `<i></i>in ${m}′`; };
     setCount(5); card.classList.add('show');
     if (reduce) return;
@@ -303,12 +341,11 @@
       if (running) return; running = true;
       while (on) {
         box.classList.remove('joining'); joined.classList.remove('on'); card.classList.remove('show');
-        for (const m of [7, 6]) { setCount(m); await sleep(800); if (!on) break; }
-        if (!on) break;
-        setCount(5); card.classList.add('show'); await sleep(3400); if (!on) break;
+        setCount(6); await sleep(900); if (!on) break;
+        setCount(5); card.classList.add('show'); await sleep(4200); if (!on) break;
         join.classList.add('press'); await sleep(200); join.classList.remove('press');
         box.classList.add('joining'); card.classList.remove('show'); await sleep(250);
-        joined.classList.add('on'); await sleep(2000);
+        joined.classList.add('on'); await sleep(1600);
       }
       running = false;
     };
@@ -348,7 +385,7 @@
   // ⌃⇧N pressed, the notch opens with the cursor in a new to-do
   function keysDemo(box, scene) {
     const ks = $$('.keys span', scene);
-    const o = staticOtto(child(box), { panelH: 150, openW: 596 });
+    const o = staticOtto(child(box), { panelH: 330, openW: 596 });
     o.fakeFocus = true; o.render();
     if (reduce) { o.setState('open', true); return { active() {} }; }
     let live = false, running = false;
@@ -358,7 +395,7 @@
         o.setState('idle'); ks.forEach((k) => k.classList.remove('down'));
         await sleep(1100); if (!live) break;
         for (const k of ks) { k.classList.add('down'); await sleep(160); }
-        await sleep(120); o.setState('open'); await sleep(450); ks.forEach((k) => k.classList.remove('down'));
+        o.setState('hover'); await sleep(200); o.setState('open'); await sleep(400); ks.forEach((k) => k.classList.remove('down'));
         await sleep(2800);
       }
       running = false;
@@ -370,8 +407,15 @@
     const o = staticOtto(child(box), { panelH: 360, openW: 596 });
     o.s.active = 'notes'; o.s.view = 'page'; o.s.page = o.s.notes[0].id; o.render();
     if (reduce) { o.setState('open', true); return { active() {} }; }
-    let was = false;
-    return { active: async (v) => { if (v && !was) { o.setState('idle', true); await sleep(450); o.setState('open'); } was = v; } };
+    let was = false, token = 0;
+    return { active: async (v) => {
+      if (v === was) return; was = v;
+      const my = ++token;
+      if (!v) { o.setState('idle', true); return; }
+      await sleep(350); if (my !== token) return;
+      o.setState('hover'); await sleep(220); if (my !== token) return;
+      o.setState('open');
+    } };
   }
   // the closed notch counting down, then the card five minutes before
   function meetDemo(box) {
@@ -505,16 +549,6 @@
     $$('.sec').forEach((s) => $$('.rv', s).forEach((el, k) => { el.style.setProperty('--rd', Math.min(k * 0.07, 0.35) + 's'); io.observe(el); }));
   }
 
-  // "Watch it open": scroll just far enough for the screen to straighten and the notch to open
-  function peek() {
-    const a = $('[data-peek]'); if (!a) return;
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      const y = M.mobile ? 300 : 380;
-      if (lenis) lenis.scrollTo(y, { duration: 1.6 }); else scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
-    });
-  }
-
   /* ================= wiring ================= */
   let raf = 0;
   const frame = () => { raf = 0; navFrame(); heroFrame(); finFrame(innerHeight); };
@@ -526,7 +560,7 @@
     fitAll();
     todosViz(); noteViz(); meetViz();
     tour(); modes(); carousel(); faq();
-    megaEyes(); layoutFooter(); reveals(); peek();
+    megaEyes(); layoutFooter(); reveals();
     frame();
     addEventListener('scroll', ask, { passive: true });
     let t;

@@ -5,7 +5,7 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 OUT = REPO / 'site/drafts/v5/index.html'
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '2'
+V = '3'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
@@ -64,19 +64,18 @@ def btn(label, cls='', href=DMG, apple=True, arrow=False):
 # ---------- sections ----------
 HERO = f'''
 <section class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas><i class="grain"></i><i class="hero-fade"></i></div>
+  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas><i class="hero-fade"></i></div>
   <div class="hero-copy">
     <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
     <p class="lead intro-in" style="--d:.3s">Otto puts your to-dos, notes and next meeting in the notch of your MacBook. Hover, and your day is there.</p>
     <div class="cta-row intro-in" style="--d:.45s">{btn('Download for Mac', 'dark big')}</div>
-    <a class="tour-link intro-in" style="--d:.6s" href="#product" data-peek>{icon('eye', 16)}<span>Watch it open as you scroll</span></a>
   </div>
   <div class="product-wrap intro-in" style="--d:.5s">
     <div class="product" id="product">
       <div class="mac" role="group" aria-label="Otto open in the notch of a Mac screen">
         <div class="mac-screen"><div class="vd">
-          <img class="wall" src="/assets/img/wallpaper.jpg" alt="" width="2880" height="1800">
+          <img class="wall" src="lion.jpg" alt="" width="2560" height="1600">
           <div class="menubar" aria-hidden="true"><div>{APPLE}<b>Otto</b><span>File</span><span>Edit</span><span>View</span></div><div><span>Thu Oct 8</span><span>08:08</span></div></div>
           <div class="vd-otto"><div id="hero-otto"></div></div>
         </div></div>
@@ -99,12 +98,12 @@ BLOCKS = f'''
         <p>Tick a to-do and it bows out of the list. Steps, links and screenshots stay right in the line.</p>
       </article>
       <article class="c3">
-        <div class="viz" aria-hidden="true"><div class="fit" data-w="420" data-h="340"><div class="demo" data-viz="note"></div></div></div>
+        <div class="viz" aria-hidden="true"><div class="fit" data-w="460" data-h="372"><div class="demo" data-viz="note"></div></div></div>
         <h3>{icon('note', 18)}Notes with room to think</h3>
         <p>Headings, lists, checklists, links, quotes and code. Format as you type, and keep it all as Markdown.</p>
       </article>
       <article class="c3">
-        <div class="viz viz-top" aria-hidden="true"><div class="fit" data-w="420" data-h="374"><div class="demo" data-viz="meet"></div></div></div>
+        <div class="viz viz-top" aria-hidden="true"><div class="fit" data-w="380" data-h="330"><div class="demo" data-viz="meet"></div></div></div>
         <h3>{icon('clock', 18)}Never late for a meeting</h3>
         <p>A countdown waits in the notch. Five minutes before, Otto opens with Join and Snooze.</p>
       </article>
@@ -128,7 +127,7 @@ def scene_ui(demo):
     h = {'keys': 200, 'notes': 380, 'meeting': 240}[demo]
     return f'<div class="ui"><div class="fit" data-w="620" data-h="{h}"><div class="demo" data-demo="{demo}"></div></div></div>{keys}'
 scenes_html = ''.join(f'''
-      <div class="scene{' on' if i == 0 else ''}" data-scene="{i}" data-sky="{sky}"><i class="grain"></i>
+      <div class="scene{' on' if i == 0 else ''}" data-scene="{i}" data-sky="{sky}">
         {scene_ui(demo)}
       </div>''' for i, (_, _, _, sky, demo) in enumerate(STEPS))
 
@@ -138,7 +137,6 @@ TOUR = f'''
     <div class="tour-l">
       <h2 class="t-l rv">Your day,<br>one hover away</h2>
       <p class="rv">Everything you’d normally keep in five places sits in the notch. Catch it, write it down, show up on time.</p>
-      <div class="rv">{btn('Download for Mac', 'light', arrow=False)}</div>
       <div class="steps rv" role="group" aria-label="What Otto does">{steps_html}
       </div>
     </div>
@@ -161,7 +159,7 @@ MODES = f'''
     </div>
     <div class="mode-stage rv" data-mode="notch">
       <div class="mode-screen">
-        <img class="wall" src="/assets/img/wallpaper.jpg" alt="" width="2880" height="1800" loading="lazy">
+        <img class="wall" src="lion.jpg" alt="" width="2560" height="1600" loading="lazy">
         <div class="menubar" aria-hidden="true"><div>{APPLE}<b>Otto</b></div><div><span>Thu Oct 8</span><span>08:08</span></div></div>
         <i class="hw-notch" aria-hidden="true"></i>
         <div class="m-notch"><div class="fit" data-w="620" data-h="430"><div class="demo" data-demo="mode-notch"></div></div></div>
@@ -247,7 +245,7 @@ FAQS = f'''
 
 FINALE = f'''
 <section class="sec finale" id="get">
-  <div class="fin-bg" aria-hidden="true"><div class="glow"></div><i class="grain"></i><div class="fade"></div></div>
+  <div class="fin-bg" aria-hidden="true"><div class="glow"></div><div class="fade"></div></div>
   <div class="wrap fin-in">
     <img class="app-icon rv" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h2 class="t-l rv">Your notch is waiting.</h2>
@@ -262,14 +260,13 @@ FOOTER = f'''
   <div class="wrap">
     <div class="foot-cols">
       <div class="foot-about">
-        <a class="brand" href="#top" aria-label="Otto, back to top">{LOGO}</a>
         <p>A free Mac app for to-dos, notes and meetings. Made by Marcello Zanetta.</p>
+        <p class="legal">© 2026 Otto<br>Mac and macOS are trademarks of Apple Inc. Google Meet is a trademark of Google LLC.</p>
       </div>
       <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
       <div><h4>Get it</h4><ul><li><a href="{DMG}">Download for Mac</a></li></ul></div>
       <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
     </div>
-    <div class="foot-legal"><span>© 2026 Otto</span><span>Mac and macOS are trademarks of Apple Inc. Google Meet is a trademark of Google LLC.</span></div>
   </div>
   <div class="wrap"><div class="mega" aria-hidden="true">
     <svg id="mega" viewBox="0 0 883 430">
@@ -307,11 +304,8 @@ html = f'''<!doctype html>
 </defs></svg>
 
 <header class="nav" id="nav">
-  <div class="nav-in">
-    <a class="brand" href="#top" aria-label="Otto, back to top">{LOGO}</a>
-    <nav class="links" aria-label="Sections"><a href="#how">How it works</a><a href="#layouts">Layouts</a><a href="#features">Features</a><a href="#faq">FAQ</a></nav>
-    {btn('Download', 'nav-btn')}
-  </div>
+  <a class="brand" href="#top" aria-label="Otto, back to top">{LOGO}</a>
+  {btn('Download', 'nav-btn')}
 </header>
 
 <main id="main">

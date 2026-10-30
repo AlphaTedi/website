@@ -5,7 +5,7 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 OUT = REPO / 'site/drafts/v5/index.html'
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '1'
+V = '2'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
@@ -63,10 +63,11 @@ def btn(label, cls='', href=DMG, apple=True, arrow=False):
 
 # ---------- sections ----------
 HERO = f'''
-<section class="hero" data-theme="light" id="top">
-  <div class="sky" aria-hidden="true"><i class="haze"></i></div>
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas><i class="grain"></i><i class="hero-fade"></i></div>
   <div class="hero-copy">
-    <h1 class="t-xl intro-in" style="--d:.1s">Your day lives<br>in the notch.</h1>
+    <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
+    <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
     <p class="lead intro-in" style="--d:.3s">Otto puts your to-dos, notes and next meeting in the notch of your MacBook. Hover, and your day is there.</p>
     <div class="cta-row intro-in" style="--d:.45s">{btn('Download for Mac', 'dark big')}</div>
     <a class="tour-link intro-in" style="--d:.6s" href="#product" data-peek>{icon('eye', 16)}<span>Watch it open as you scroll</span></a>
@@ -85,7 +86,7 @@ HERO = f'''
 </section>'''
 
 BLOCKS = f'''
-<section class="sec blocks" id="how" data-theme="dark">
+<section class="sec blocks" id="how">
   <div class="wrap">
     <div class="sec-head split-head">
       <h2 class="t-l rv">Quiet until you look.<br>Ready when you do.</h2>
@@ -93,38 +94,19 @@ BLOCKS = f'''
     </div>
     <div class="cards3 rv">
       <article class="c3">
-        <div class="viz viz-grid" aria-hidden="true">
-          <div class="tiles">
-            <span>{icon('calendar', 22)}</span><span>{icon('video', 22)}</span><span>{icon('folder', 22)}</span>
-            <span>{icon('link', 22)}</span><span class="center">{EYES_SM}</span><span>{icon('file', 22)}</span>
-            <span>{icon('image', 22)}</span><span>{icon('keyboard', 22)}</span><span>{icon('checks', 22)}</span>
-          </div>
-          <div class="status"><i class="spin"></i><span>Reading your calendars</span></div>
-        </div>
-        <h3>{icon('layers', 18)}Fits the Mac you have</h3>
-        <p>Reads the calendars already on your Mac and keeps a plain Markdown copy of your lists. No account, nothing to sync.</p>
+        <div class="viz" aria-hidden="true"><div class="fit" data-w="420" data-h="340"><div class="demo" data-viz="todos"></div></div></div>
+        <h3>{icon('checks', 18)}Lists you’ll want to finish</h3>
+        <p>Tick a to-do and it bows out of the list. Steps, links and screenshots stay right in the line.</p>
       </article>
       <article class="c3">
-        <div class="viz viz-type" aria-hidden="true">
-          <div class="who">{EYES_SM}<span>Work</span></div>
-          <div class="typed t-s"><span class="txt"></span><i class="caret"></i></div>
-          <span class="chip">{icon('link', 14)}<span>figma.com/onboarding</span></span>
-          <div class="steps-card">
-            <div class="h">2 steps</div>
-            <div class="st"><i></i>Collect feedback from Ana</div>
-            <div class="st"><i></i>Write the summary for Simon</div>
-          </div>
-        </div>
-        <h3>{icon('spark', 18)}Catch it in one line</h3>
-        <p>Press ⌃⇧N from any app and type. Links, images and steps stay right in the line.</p>
+        <div class="viz" aria-hidden="true"><div class="fit" data-w="420" data-h="340"><div class="demo" data-viz="note"></div></div></div>
+        <h3>{icon('note', 18)}Notes with room to think</h3>
+        <p>Headings, lists, checklists, links, quotes and code. Format as you type, and keep it all as Markdown.</p>
       </article>
       <article class="c3">
-        <div class="viz viz-tick" aria-hidden="true">
-          <div class="tick-head"><span>Today</span><span><b class="n">5</b> done before lunch</span></div>
-          <div class="tick-win"><div class="tick-list"></div></div>
-        </div>
-        <h3>{icon('clock', 18)}Opens when it matters</h3>
-        <p>A countdown waits in the notch. Five minutes before a meeting, Otto opens with Join and Snooze.</p>
+        <div class="viz viz-top" aria-hidden="true"><div class="fit" data-w="420" data-h="374"><div class="demo" data-viz="meet"></div></div></div>
+        <h3>{icon('clock', 18)}Never late for a meeting</h3>
+        <p>A countdown waits in the notch. Five minutes before, Otto opens with Join and Snooze.</p>
       </article>
     </div>
   </div>
@@ -143,19 +125,15 @@ steps_html = ''.join(f'''
       </button>''' for i, (ic, t, d, _, _) in enumerate(STEPS))
 def scene_ui(demo):
     keys = '<div class="keys" aria-hidden="true"><span>⌃</span><span>⇧</span><span>N</span></div>' if demo == 'keys' else ''
-    h = {'keys': 220, 'notes': 360, 'meeting': 230}[demo]
-    return f'''<div class="ui"><div class="mini">
-          <div class="menubar" aria-hidden="true"><div>{APPLE}<b>Otto</b></div><div><span>08:08</span></div></div>
-          <div class="mini-otto"><div class="fit" data-w="560" data-h="{h}"><div class="demo" data-demo="{demo}"></div></div></div>
-        </div>{keys}</div>'''
+    h = {'keys': 200, 'notes': 380, 'meeting': 240}[demo]
+    return f'<div class="ui"><div class="fit" data-w="620" data-h="{h}"><div class="demo" data-demo="{demo}"></div></div></div>{keys}'
 scenes_html = ''.join(f'''
-      <div class="scene{' on' if i == 0 else ''}" data-scene="{i}" data-sky="{sky}">
-        <canvas class="hl" aria-hidden="true"></canvas><canvas class="hm" aria-hidden="true"></canvas><canvas class="hn" aria-hidden="true"></canvas>
+      <div class="scene{' on' if i == 0 else ''}" data-scene="{i}" data-sky="{sky}"><i class="grain"></i>
         {scene_ui(demo)}
       </div>''' for i, (_, _, _, sky, demo) in enumerate(STEPS))
 
 TOUR = f'''
-<section class="sec tour-sec" data-theme="dark">
+<section class="sec tour-sec">
   <div class="wrap tour">
     <div class="tour-l">
       <h2 class="t-l rv">Your day,<br>one hover away</h2>
@@ -170,7 +148,7 @@ TOUR = f'''
 </section>'''
 
 MODES = f'''
-<section class="sec modes" id="layouts" data-theme="violet">
+<section class="sec modes" id="layouts">
   <div class="wrap">
     <div class="sec-head center-head">
       <h2 class="t-l rv">In the notch, or floating.</h2>
@@ -232,7 +210,7 @@ cards_html = ''.join(f'''
       <article class="fc"><div class="fc-viz">{mock(m)}</div><h3>{icon(ic, 18)}{t}</h3><p>{d}</p></article>''' for ic, t, d, m in CARDS)
 
 CAROUSEL = f'''
-<section class="sec small" id="features" data-theme="dark">
+<section class="sec small" id="features">
   <div class="wrap">
     <div class="sec-head">
       <h2 class="t-l rv">The small things</h2>
@@ -249,85 +227,13 @@ CAROUSEL = f'''
   </div>
 </section>'''
 
-NUMBERS = f'''
-<section class="sec numbers" data-theme="dark">
-  <div class="wrap nums">
-    <div class="num-big rv">
-      <canvas class="nb-sky" aria-hidden="true"></canvas>
-      <span class="badge"><i></i>Every meeting</span>
-      <div class="big"><span class="t-xxl" data-count="5">0</span><span class="unit t-l">min</span></div>
-      <p class="cap">before it starts, Otto opens with Join and Snooze</p>
-      <p class="small">From the calendars already on your Mac</p>
-    </div>
-    <div class="num-list rv">
-      <h2 class="t-l">Otto in numbers</h2>
-      <dl>
-        <div><dt class="t-m" data-count="0">0</dt><dd>accounts to make</dd></div>
-        <div><dt class="t-m" data-count="0">0</dt><dd>servers between you and your lists</dd></div>
-        <div><dt class="t-m" data-count="1">0</dt><dd>shortcut, from any app</dd></div>
-        <div><dt class="t-m" data-count="2">0</dt><dd>languages, English and Italian</dd></div>
-      </dl>
-    </div>
-  </div>
-</section>'''
-
-PRIVACY = f'''
-<section class="sec trust" data-theme="dark">
-  <div class="trust-bg" aria-hidden="true">
-    <div class="glow"></div>
-    <canvas class="tf"></canvas><canvas class="tm"></canvas><canvas class="tn"></canvas>
-    <div class="shade"></div><div class="fade"></div>
-  </div>
-  <div class="wrap trust-in">
-    <div class="sec-head center-head">
-      <h2 class="t-l rv">Private by default</h2>
-      <p class="rv">Your lists live on your Mac. There is no Otto account, and nothing passes through a server.</p>
-    </div>
-    <div class="dial rv" aria-hidden="true">
-      <div class="dial-ticks"></div>
-      <div class="dial-in"><span class="lockc">{icon('lock', 26)}</span><span>On your Mac</span></div>
-    </div>
-    <div class="principles">
-      <div class="pr rv">{icon('user', 20)}<h3>No account</h3><p>Download it and start. There is nothing to sign up for.</p></div>
-      <div class="pr rv">{icon('folder', 20)}<h3>Stored on your Mac</h3><p>To-dos and notes stay local, with a Markdown copy in a folder you choose.</p></div>
-      <div class="pr rv">{icon('calendar', 20)}<h3>Calendars, read only</h3><p>Otto reads events. It never creates, edits or deletes one.</p></div>
-      <div class="pr rv">{icon('shield', 20)}<h3>Usage data, only with a yes</h3><p>Anonymous and opt-in. Never your to-dos, notes or anything you type.</p></div>
-    </div>
-  </div>
-</section>'''
-
-def nice(date):
-    return date
-feat = LOG[0]
-rest = LOG[1:4]
-NEW = f'''
-<section class="sec new" id="new" data-theme="dark">
-  <div class="wrap">
-    <div class="sec-head split-head">
-      <h2 class="t-l rv">What’s new</h2>
-      <p class="rv">Otto ships often, and updates itself. Here is what changed lately.</p>
-    </div>
-    <article class="post-feat rv">
-      <div class="pf-viz"><canvas class="pf-sky" aria-hidden="true"></canvas><div class="fitbox"><div class="fit" data-w="600" data-h="200"><div class="demo" data-demo="alert"></div></div></div></div>
-      <div class="pf-txt">
-        <div class="meta"><span class="tag">Meetings</span><time datetime="{feat[0]}">{feat[1]}</time></div>
-        <h3 class="t-l">{feat[2]}</h3>
-        <p>{feat[3]}</p>
-      </div>
-    </article>
-    <div class="posts">{''.join(f"""
-      <article class="post rv"><div class="meta"><time datetime="{d}">{h}</time></div><h3 class="t-m">{t}</h3><p>{p}</p></article>""" for d, h, t, p in rest)}
-    </div>
-  </div>
-</section>'''
-
 def faq_items(tab):
     qs = [(q, FAQ[q]) for q in dict(FAQ_TABS)[tab]] + FAQ_EXTRA.get(tab, [])
     return ''.join(f'<details><summary>{q}<i aria-hidden="true"></i></summary><div class="ans"><p>{a}</p></div></details>' for q, a in qs)
 faq_tabs = ''.join(f'<button role="tab" aria-selected="{"true" if i == 0 else "false"}" data-tab="{i}">{name}</button>' for i, (name, _) in enumerate(FAQ_TABS))
 faq_panels = ''.join(f'<div class="faq-panel{" on" if i == 0 else ""}" role="tabpanel" data-panel="{i}">{faq_items(name)}</div>' for i, (name, _) in enumerate(FAQ_TABS))
 FAQS = f'''
-<section class="sec faq-sec" id="faq" data-theme="light">
+<section class="sec faq-sec" id="faq">
   <div class="narrow">
     <div class="sec-head center-head">
       <h2 class="t-l rv">Before you ask</h2>
@@ -339,28 +245,15 @@ FAQS = f'''
   </div>
 </section>'''
 
-CTA = f'''
-<section class="sec cta-sec" data-theme="light">
-  <div class="wrap">
-    <div class="cta-card rv">
-      <div class="cta-sky" aria-hidden="true"></div>
-      <div class="cta-copy">
-        <h2 class="t-l">Your notch<br>is waiting.</h2>
-        <ul class="checks">
-          <li>{icon('check', 16)}Free, with no paywall</li>
-          <li>{icon('check', 16)}No account to make</li>
-          <li>{icon('check', 16)}Signed and notarized by Apple</li>
-        </ul>
-        <div class="cta-row">{btn('Download for Mac', 'dark big')}<a class="btn ghost big" href="#faq"><span>Read the FAQ</span></a></div>
-        <p class="meta">macOS 13 or later</p>
-      </div>
-      <div class="cta-win" aria-hidden="true">
-        <div class="cw-screen"><img class="wall" src="/assets/img/wallpaper.jpg" alt="" width="2880" height="1800" loading="lazy">
-          <div class="menubar"><div>{APPLE}<b>Otto</b></div><div><span>08:08</span></div></div>
-          <div class="cw-otto"><div class="fit" data-w="620" data-h="420"><div class="demo" data-demo="cta"></div></div></div>
-        </div>
-      </div>
-    </div>
+FINALE = f'''
+<section class="sec finale" id="get">
+  <div class="fin-bg" aria-hidden="true"><div class="glow"></div><i class="grain"></i><div class="fade"></div></div>
+  <div class="wrap fin-in">
+    <img class="app-icon rv" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
+    <h2 class="t-l rv">Your notch is waiting.</h2>
+    <p class="rv">Free, no account. Needs macOS 13 or later.</p>
+    <div class="rv">{btn('Download for Mac', 'light big')}</div>
+    <p class="tip rv">Like it? <a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a>.</p>
   </div>
 </section>'''
 
@@ -372,9 +265,9 @@ FOOTER = f'''
         <a class="brand" href="#top" aria-label="Otto, back to top">{LOGO}</a>
         <p>A free Mac app for to-dos, notes and meetings. Made by Marcello Zanetta.</p>
       </div>
-      <div><h4>Otto</h4><ul><li><a href="#features">Features</a></li><li><a href="#new">What’s new</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
       <div><h4>Get it</h4><ul><li><a href="{DMG}">Download for Mac</a></li></ul></div>
-      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li></ul></div>
+      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
     </div>
     <div class="foot-legal"><span>© 2026 Otto</span><span>Mac and macOS are trademarks of Apple Inc. Google Meet is a trademark of Google LLC.</span></div>
   </div>
@@ -401,7 +294,7 @@ html = f'''<!doctype html>
 <meta name="robots" content="noindex">
 <title>Otto · Your day lives in the notch</title>
 <meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away.">
-<meta name="theme-color" content="#E9E3F7">
+<meta name="theme-color" content="#0D0A14">
 <link rel="icon" href="../v3/shared/otto-icon-512.png">
 <link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
@@ -416,7 +309,7 @@ html = f'''<!doctype html>
 <header class="nav" id="nav">
   <div class="nav-in">
     <a class="brand" href="#top" aria-label="Otto, back to top">{LOGO}</a>
-    <nav class="links" aria-label="Sections"><a href="#how">How it works</a><a href="#features">Features</a><a href="#new">What’s new</a><a href="#faq">FAQ</a></nav>
+    <nav class="links" aria-label="Sections"><a href="#how">How it works</a><a href="#layouts">Layouts</a><a href="#features">Features</a><a href="#faq">FAQ</a></nav>
     {btn('Download', 'nav-btn')}
   </div>
 </header>
@@ -427,11 +320,8 @@ html = f'''<!doctype html>
 {TOUR}
 {MODES}
 {CAROUSEL}
-{NUMBERS}
-{PRIVACY}
-{NEW}
 {FAQS}
-{CTA}
+{FINALE}
 </main>
 {FOOTER}
 
@@ -439,7 +329,6 @@ html = f'''<!doctype html>
 <script src="lenis.min.js?v={V}"></script>
 <script src="../v3/shared/otto-ui.js?v={V}"></script>
 <script src="../v3/shared/common.js?v={V}"></script>
-<script src="../v4/hills.js?v={V}"></script>
 <script src="v5.js?v={V}"></script>
 </body>
 </html>

@@ -67,7 +67,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .hero-copy { position: relative; z-index: 2; text-align: center; padding: 0 20px; color: #1E1530; will-change: transform, opacity; }
 .app-icon { width: 76px; height: 76px; margin: 0 auto 26px; border-radius: 18px; filter: drop-shadow(0 14px 24px rgba(48, 30, 140, .35)); }
 /* the Otto logo, whose two O's look at your cursor and blink */
-.hero-logo { width: 88px; margin: 0 auto 28px; color: #1E1530; line-height: 0; }
+.hero-logo { width: 64px; margin: 0 auto 26px; color: #1E1530; line-height: 0; }
 .hero-logo svg { width: 100%; height: auto; overflow: visible; }
 .hero h1 { margin: 0 auto; max-width: 14em; }
 .hero .lead { margin: 22px auto 0; max-width: 33em; font-size: 18px; line-height: 1.55; color: #574C6E; }
@@ -379,7 +379,7 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
   .nav .brand svg { height: 17px; }
   .hero-stage { padding-top: 72px; }
   .app-icon { width: 64px; height: 64px; border-radius: 15px; margin-bottom: 22px; }
-  .hero-logo { width: 72px; margin-bottom: 22px; }
+  .hero-logo { width: 56px; margin-bottom: 20px; }
   .hero .lead { font-size: 16.5px; }
   .product-wrap { margin-top: 56px; }
   .product { width: calc(100% - 24px); }

@@ -84,48 +84,49 @@
   const nav = $('#nav');
   const navFrame = () => nav.classList.toggle('show', scrollY > 60);
 
-  /* ================= hero: a living gradient (WebGL), with a CSS gradient underneath as the fallback ================= */
-  const heroEl = $('.hero');
-  const liquid = (() => {
-    const cv = $('#liquid'); if (!cv) return null;
+  /* ================= the living gradients (WebGL) =================
+     One smooth ramp — peach, rose, violet, night — blended with gaussian weights (no hard stops, no bands),
+     bent by slow low-frequency noise, with a couple of soft glows drifting through it and a 1/255 dither so
+     the screen never shows steps. The hero runs it top to bottom; the closing call runs it reversed.
+     A CSS gradient with the same stops sits underneath as the fallback. */
+  const RAMP = [[243, 182, 156], [240, 175, 162], [224, 154, 174], [182, 120, 174], [126, 82, 166], [74, 49, 144], [36, 26, 92], [18, 14, 42], [13, 10, 20]];
+  const STOPS = [0, 0.18, 0.31, 0.43, 0.53, 0.63, 0.75, 0.88, 1];
+  function makeLiquid(cv, host, { reverse = false, band = [0, 0.5], follow = true } = {}) {
+    if (!cv) return null;
     const gl = cv.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'low-power' });
     if (!gl) return null;
     const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     const fs = `precision highp float;
-      uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse;
+      uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform vec2 uBand;
+      uniform vec3 uC[9]; uniform float uS[9];
       float hash(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
-      float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+      float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*f*(f*(f*6.-15.)+10.);
         return mix(mix(hash(i),hash(i+vec2(1.,0.)),u.x), mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),u.x), u.y); }
       float fbm(vec2 p){ float v=0., a=.5; mat2 m=mat2(1.6,1.2,-1.2,1.6); for(int i=0;i<4;i++){ v+=a*noise(p); p=m*p; a*=.5; } return v; }
-      vec3 C(float r,float g,float b){ return vec3(r,g,b)/255.; }
+      vec3 ramp(float y){
+        vec3 c=vec3(0.); float w=0.;
+        for(int i=0;i<9;i++){ float d=(y-uS[i])/.085; float k=exp(-d*d); c+=uC[i]*k; w+=k; }
+        return c/w;
+      }
       void main(){
         vec2 uv = vec2(gl_FragCoord.x/uRes.x, 1.-gl_FragCoord.y/uRes.y);
         float asp = uRes.x/uRes.y;
-        vec2 p = vec2(uv.x*asp, uv.y)*2.4;
-        float t = uTime*.045;
+        vec2 p = vec2(uv.x*asp, uv.y)*1.5;
+        float t = uTime*.035;
         vec2 q = vec2(fbm(p+vec2(0.,t)), fbm(p+vec2(5.2,1.3)-t));
-        vec2 r = vec2(fbm(p+3.*q+vec2(1.7,9.2)+t*.6), fbm(p+3.*q+vec2(8.3,2.8)-t*.5));
-        float n = fbm(p+2.4*r);
-        float y = uv.y + (n-.5)*.16;
-        vec3 col = C(236.,230.,252.);
-        col = mix(col, C(214.,200.,250.), smoothstep(.04,.2,y));
-        col = mix(col, C(168.,148.,243.), smoothstep(.18,.36,y));
-        col = mix(col, C(106.,82.,226.), smoothstep(.34,.52,y));
-        col = mix(col, C(58.,42.,156.), smoothstep(.5,.66,y));
-        col = mix(col, C(28.,20.,80.), smoothstep(.64,.8,y));
-        col = mix(col, C(13.,10.,20.), smoothstep(.78,.95,y));
-        float band = smoothstep(.0,.16,uv.y)*(1.-smoothstep(.42,.62,uv.y));
-        col = mix(col, C(246.,166.,212.), band*smoothstep(.46,.78,r.x)*.72);
-        col = mix(col, C(255.,206.,184.), band*smoothstep(.5,.82,q.y)*.62);
-        col = mix(col, C(140.,172.,255.), band*smoothstep(.54,.84,r.y)*.55);
-        float deep = smoothstep(.4,.55,uv.y)*(1.-smoothstep(.72,.86,uv.y));
-        col = mix(col, C(214.,120.,200.), deep*smoothstep(.6,.9,n)*.35);
+        float n = fbm(p+1.6*q+vec2(1.7,9.2)+t*.5);
+        float y = clamp(uv.y + (n-.5)*.09, 0., 1.);
+        vec3 col = ramp(y);
+        float zone = smoothstep(uBand.x-.12, uBand.x+.1, uv.y)*(1.-smoothstep(uBand.y-.1, uBand.y+.14, uv.y));
+        col = mix(col, vec3(1.,.83,.75), zone*smoothstep(.45,.85,q.x)*.22);
+        col = mix(col, vec3(.62,.5,.95), zone*smoothstep(.5,.9,q.y)*.2);
         vec2 m = vec2(uMouse.x*asp, uMouse.y);
         float d = distance(vec2(uv.x*asp, uv.y), m);
-        col = mix(col, C(255.,220.,205.), exp(-d*d*16.)*.28*band);
+        col = mix(col, vec3(1.,.86,.8), exp(-d*d*10.)*.16*zone);
+        col += (hash(gl_FragCoord.xy + fract(uTime)*91.7) - .5) / 255.;
         gl_FragColor = vec4(col, 1.);
       }`;
-    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; };
+    const sh = (type, src) => { const x = gl.createShader(type); gl.shaderSource(x, src); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(x)); return null; } return x; };
     const v = sh(gl.VERTEX_SHADER, vs), f = sh(gl.FRAGMENT_SHADER, fs); if (!v || !f) return null;
     const pr = gl.createProgram(); gl.attachShader(pr, v); gl.attachShader(pr, f); gl.linkProgram(pr);
     if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
@@ -133,26 +134,36 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    const uRes = gl.getUniformLocation(pr, 'uRes'), uTime = gl.getUniformLocation(pr, 'uTime'), uMouse = gl.getUniformLocation(pr, 'uMouse');
-    let on = true, raf = 0, t0 = performance.now(), mouse = [0.5, 0.18], mTarget = [0.5, 0.18];
+    const U = (n) => gl.getUniformLocation(pr, n);
+    const cols = reverse ? RAMP.slice().reverse() : RAMP, stops = reverse ? STOPS.map((x) => 1 - x).reverse() : STOPS;
+    gl.uniform3fv(U('uC'), new Float32Array(cols.flat().map((x) => x / 255)));
+    gl.uniform1fv(U('uS'), new Float32Array(stops));
+    gl.uniform2f(U('uBand'), band[0], band[1]);
+    const uRes = U('uRes'), uTime = U('uTime'), uMouse = U('uMouse');
+    let on = false, raf = 0, t0 = performance.now(), mouse = [0.5, (band[0] + band[1]) / 2], mTarget = mouse.slice();
     const size = () => {
-      const k = innerWidth < 640 ? 0.5 : 0.4;          // a soft gradient doesn't need full resolution
-      cv.width = Math.max(2, Math.round(heroEl.clientWidth * k)); cv.height = Math.max(2, Math.round(heroEl.clientHeight * k));
+      const k = innerWidth < 640 ? 0.6 : 0.5;          // a soft gradient doesn't need full resolution
+      cv.width = Math.max(2, Math.round(host.clientWidth * k)); cv.height = Math.max(2, Math.round(host.clientHeight * k));
       gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(uRes, cv.width, cv.height);
     };
     const draw = (now) => {
       raf = 0;
       mouse = mouse.map((m, i) => m + (mTarget[i] - m) * 0.05);
-      gl.uniform1f(uTime, reduce ? 12 : (now - t0) / 1000 + 12);
+      gl.uniform1f(uTime, reduce ? 20 : (now - t0) / 1000 + 20);
       gl.uniform2f(uMouse, mouse[0], mouse[1]);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       if (on && !reduce) raf = requestAnimationFrame(draw);
     };
     size(); draw(performance.now()); cv.classList.add('on');
-    watch(heroEl, (vis) => { on = vis; if (on && !raf && !reduce) raf = requestAnimationFrame(draw); }, { threshold: 0 });
-    addEventListener('pointermove', (e) => { if (!on) return; const r = heroEl.getBoundingClientRect(); mTarget = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; }, { passive: true });
+    watch(host, (vis) => { on = vis; if (on && !raf && !reduce) raf = requestAnimationFrame(draw); }, { threshold: 0 });
+    if (follow) addEventListener('pointermove', (e) => { if (!on) return; const r = host.getBoundingClientRect(); mTarget = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; }, { passive: true });
     return { size: () => { size(); if (!raf) draw(performance.now()); } };
-  })();
+  }
+  const heroEl = $('.hero');
+  const liquids = [
+    makeLiquid($('#liquid'), heroEl, { band: [0, 0.45] }),
+    makeLiquid($('#liquid-fin'), $('.finale'), { reverse: true, band: [0.55, 1] }),
+  ].filter(Boolean);
 
   /* ================= hero: the Mac straightens up, the notch opens ================= */
   const product = $('#product'), vd = $('.vd'), screenEl = $('.mac-screen');
@@ -566,10 +577,10 @@
     let t;
     addEventListener('resize', () => {
       layoutHero(); layoutFooter(); ask();
-      clearTimeout(t); t = setTimeout(() => liquid && liquid.size(), 200);
+      clearTimeout(t); t = setTimeout(() => liquids.forEach((l) => l.size()), 200);
     });
     new ResizeObserver(() => { layoutFooter(); }).observe(footer);
-    if (document.fonts) document.fonts.ready.then(() => { layoutFooter(); liquid && liquid.size(); ask(); });
+    if (document.fonts) document.fonts.ready.then(() => { layoutFooter(); liquids.forEach((l) => l.size()); ask(); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

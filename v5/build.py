@@ -5,7 +5,7 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 OUT = REPO / 'site/drafts/v5/index.html'
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '3'
+V = '4'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
@@ -64,7 +64,7 @@ def btn(label, cls='', href=DMG, apple=True, arrow=False):
 # ---------- sections ----------
 HERO = f'''
 <section class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas><i class="hero-fade"></i></div>
+  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas></div>
   <div class="hero-copy">
     <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
@@ -245,7 +245,7 @@ FAQS = f'''
 
 FINALE = f'''
 <section class="sec finale" id="get">
-  <div class="fin-bg" aria-hidden="true"><div class="glow"></div><div class="fade"></div></div>
+  <div class="fin-bg" aria-hidden="true"><canvas id="liquid-fin"></canvas></div>
   <div class="wrap fin-in">
     <img class="app-icon rv" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h2 class="t-l rv">Your notch is waiting.</h2>
@@ -257,16 +257,16 @@ FINALE = f'''
 
 FOOTER = f'''
 <footer class="site-footer" id="footer">
-  <div class="wrap">
-    <div class="foot-cols">
-      <div class="foot-about">
-        <p>A free Mac app for to-dos, notes and meetings. Made by Marcello Zanetta.</p>
-        <p class="legal">© 2026 Otto<br>Mac and macOS are trademarks of Apple Inc. Google Meet is a trademark of Google LLC.</p>
-      </div>
-      <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-      <div><h4>Get it</h4><ul><li><a href="{DMG}">Download for Mac</a></li></ul></div>
-      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
+  <div class="wrap foot-top">
+    <div class="foot-about">
+      <p class="by">Free <span>·</span> Made by Marcello Zanetta</p>
+      <p class="legal">Mac and macOS are trademarks of Apple Inc.<br>Google Meet is a trademark of Google LLC.</p>
+      <p class="copy">© 2026 Otto</p>
     </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
+    </nav>
   </div>
   <div class="wrap"><div class="mega" aria-hidden="true">
     <svg id="mega" viewBox="0 0 883 430">
@@ -291,9 +291,9 @@ html = f'''<!doctype html>
 <meta name="robots" content="noindex">
 <title>Otto · Your day lives in the notch</title>
 <meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away.">
-<meta name="theme-color" content="#0D0A14">
+<meta name="theme-color" content="#F3B69C">
 <link rel="icon" href="../v3/shared/otto-icon-512.png">
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/HostGrotesk-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../v3/shared/otto-ui.css?v={V}">
 <link rel="stylesheet" href="v5.css?v={V}">

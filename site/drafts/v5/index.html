@@ -6,12 +6,12 @@
 <meta name="robots" content="noindex">
 <title>Otto · Your day lives in the notch</title>
 <meta name="description" content="Otto is a free Mac app that lives in the notch: to-dos, notes and meetings, one hover away.">
-<meta name="theme-color" content="#0D0A14">
+<meta name="theme-color" content="#F3B69C">
 <link rel="icon" href="../v3/shared/otto-icon-512.png">
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/HostGrotesk-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../v3/shared/otto-ui.css?v=3">
-<link rel="stylesheet" href="v5.css?v=3">
+<link rel="stylesheet" href="../v3/shared/otto-ui.css?v=4">
+<link rel="stylesheet" href="v5.css?v=4">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -26,7 +26,7 @@
 <main id="main">
 
 <section class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas><i class="hero-fade"></i></div>
+  <div class="hero-bg" aria-hidden="true"><canvas id="liquid"></canvas></div>
   <div class="hero-copy">
     <img class="app-icon intro-in" style="--d:0s" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h1 class="t-xl intro-in" style="--d:.12s">Your day lives<br>in the notch.</h1>
@@ -178,7 +178,7 @@
 </section>
 
 <section class="sec finale" id="get">
-  <div class="fin-bg" aria-hidden="true"><div class="glow"></div><div class="fade"></div></div>
+  <div class="fin-bg" aria-hidden="true"><canvas id="liquid-fin"></canvas></div>
   <div class="wrap fin-in">
     <img class="app-icon rv" src="/assets/icons/otto-icon-512.png" alt="" width="76" height="76">
     <h2 class="t-l rv">Your notch is waiting.</h2>
@@ -190,16 +190,16 @@
 </main>
 
 <footer class="site-footer" id="footer">
-  <div class="wrap">
-    <div class="foot-cols">
-      <div class="foot-about">
-        <p>A free Mac app for to-dos, notes and meetings. Made by Marcello Zanetta.</p>
-        <p class="legal">© 2026 Otto<br>Mac and macOS are trademarks of Apple Inc. Google Meet is a trademark of Google LLC.</p>
-      </div>
-      <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-      <div><h4>Get it</h4><ul><li><a href="/downloads/Otto.dmg">Download for Mac</a></li></ul></div>
-      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
+  <div class="wrap foot-top">
+    <div class="foot-about">
+      <p class="by">Free <span>·</span> Made by Marcello Zanetta</p>
+      <p class="legal">Mac and macOS are trademarks of Apple Inc.<br>Google Meet is a trademark of Google LLC.</p>
+      <p class="copy">© 2026 Otto</p>
     </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
+    </nav>
   </div>
   <div class="wrap"><div class="mega" aria-hidden="true">
     <svg id="mega" viewBox="0 0 883 430">
@@ -217,9 +217,9 @@
 </footer>
 
 <script>window.OTTO_T_PATH = "M605.409 147.083V74.2884C605.409 70.2867 602.135 67.0126 598.134 67.0126H560.448C556.447 67.0126 553.173 63.7385 553.173 59.7368V7.27825C553.173 3.27655 549.899 0.00244141 545.898 0.00244141H468.234C464.233 0.00244141 460.959 3.27655 460.959 7.27825V59.7368C460.959 63.7385 457.685 67.0126 453.683 67.0126H408.177C404.175 67.0126 400.901 63.7385 400.901 59.7368V7.27825C400.901 3.27655 397.627 0.00244141 393.626 0.00244141H315.962C311.961 0.00244141 308.687 3.27655 308.687 7.27825V59.7368C308.687 63.7385 305.413 67.0126 301.412 67.0126H281.732C277.731 67.0126 274.457 70.2867 274.457 74.2884V147.083C274.457 151.085 277.731 154.359 281.732 154.359H301.412C305.413 154.359 308.687 157.633 308.687 161.634V285.723C308.687 362.81 369.363 425.964 445.426 430.002C449.609 430.221 453.138 426.91 453.138 422.727V344.803C453.138 341.056 450.3 338.036 446.59 337.563C420.872 334.326 400.865 312.316 400.865 285.723V161.634C400.865 157.633 404.139 154.359 408.14 154.359H453.647C457.648 154.359 460.922 157.633 460.922 161.634V285.723C460.922 362.81 521.598 425.964 597.661 430.002C601.844 430.221 605.373 426.91 605.373 422.727V344.803C605.373 341.056 602.535 338.036 598.825 337.563C573.071 334.326 553.1 312.316 553.1 285.723V161.634C553.1 157.633 556.374 154.359 560.375 154.359H598.061C602.063 154.359 605.337 151.085 605.337 147.083H605.409Z";</script>
-<script src="lenis.min.js?v=3"></script>
-<script src="../v3/shared/otto-ui.js?v=3"></script>
-<script src="../v3/shared/common.js?v=3"></script>
-<script src="v5.js?v=3"></script>
+<script src="lenis.min.js?v=4"></script>
+<script src="../v3/shared/otto-ui.js?v=4"></script>
+<script src="../v3/shared/common.js?v=4"></script>
+<script src="v5.js?v=4"></script>
 </body>
 </html>

@@ -1,15 +1,14 @@
-/* Otto v5 — modelled on the Verity layout: a serif for titles, a living gradient behind the hero that flows
+/* Otto v5 — modelled on the Verity layout: Host Grotesk titles, a smooth living gradient that turns into night and back,
    into the night, a Mac screen that straightens up, panels built from Otto's own UI, and a footer that is revealed. */
 
-@font-face { font-family: "Newsreader"; src: url(fonts/newsreader.woff2) format("woff2-variations"), url(fonts/newsreader.woff2) format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url(fonts/newsreader-italic.woff2) format("woff2-variations"), url(fonts/newsreader-italic.woff2) format("woff2"); font-weight: 200 800; font-style: italic; font-display: swap; }
+@font-face { font-family: "Host Grotesk"; src: url(/assets/fonts/HostGrotesk-VariableFont_wght.ttf) format("truetype"); font-weight: 300 800; font-display: swap; }
 @font-face { font-family: "Geist"; src: url(fonts/geist.woff2) format("woff2-variations"), url(fonts/geist.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
 @font-face { font-family: "Geist Mono"; src: url(fonts/geist-mono.woff2) format("woff2-variations"), url(fonts/geist-mono.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
 
 :root {
   /* one dark page after the hero: the hero's gradient does the light-to-dark in a single, linear move */
   --bg: 13 10 20; --fg: 243 240 250; --muted: 150 143 166; --line: 255 255 255; --lineA: .09;
-  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --title: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --sans: "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
@@ -32,11 +31,11 @@ h1, h2, h3, h4, p { margin: 0; }
 .narrow { width: min(800px, 100% - 48px); margin: 0 auto; }
 .i { flex: none; }
 
-/* type: Newsreader for titles, Geist for everything else */
-.t-xl, .t-l, .t-m { font-family: var(--serif); font-optical-sizing: auto; font-weight: 400; }
-.t-xl { font-size: clamp(42px, 4.9vw, 68px); line-height: 1.02; letter-spacing: -.032em; }
-.t-l  { font-size: clamp(34px, 3.5vw, 50px); line-height: 1.06; letter-spacing: -.028em; }
-.t-m  { font-size: 26px; line-height: 1.2; letter-spacing: -.015em; }
+/* type: Host Grotesk for titles (as on the live site), Geist for everything else */
+.t-xl, .t-l, .t-m { font-family: var(--title); font-weight: 450; }
+.t-xl { font-size: clamp(40px, 4.5vw, 62px); line-height: 1.04; letter-spacing: -.042em; }
+.t-l  { font-size: clamp(32px, 3.3vw, 46px); line-height: 1.07; letter-spacing: -.038em; }
+.t-m  { font-size: 24px; line-height: 1.2; letter-spacing: -.025em; }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; font: 500 15px/1 var(--sans); letter-spacing: -.005em; padding: 13px 20px 13px 18px; border-radius: 99px; transition: transform .35s var(--ease), background-color .35s, color .35s, box-shadow .35s; white-space: nowrap; }
@@ -59,17 +58,14 @@ h1, h2, h3, h4, p { margin: 0; }
 
 /* ---------- hero: a living gradient from a pale sky at the top to the night under the Mac ---------- */
 .hero { position: relative; padding: 96px 0 120px; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; pointer-events: none; background:
-  radial-gradient(40% 18% at 30% 14%, rgba(247, 180, 218, .55), transparent 70%),
-  radial-gradient(36% 16% at 74% 20%, rgba(255, 210, 190, .5), transparent 70%),
-  linear-gradient(180deg, #F0EDFC 0%, #D7CDF8 16%, #A894F3 32%, #6A52E2 48%, #3A2A9C 62%, #1C1450 76%, rgb(var(--bg)) 92%); }
+.hero-bg { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, #F3B69C 0%, #F0AFA2 18%, #E09AAE 31%, #B678AE 43%, #7E52A6 53%, #4A3190 63%, #241A5C 75%, #120E2A 88%, rgb(var(--bg)) 100%); }
 .hero-bg canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s var(--ease); }
 .hero-bg canvas.on { opacity: 1; }
-.hero-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 260px; background: linear-gradient(180deg, rgb(var(--bg) / 0), rgb(var(--bg))); }
-.hero-copy { position: relative; z-index: 2; text-align: center; padding: 0 20px; color: #1A1430; }
+.hero-copy { position: relative; z-index: 2; text-align: center; padding: 0 20px; color: #24112A; }
 .app-icon { width: 76px; height: 76px; margin: 0 auto 26px; border-radius: 18px; filter: drop-shadow(0 14px 24px rgba(48, 30, 140, .35)); }
 .hero h1 { margin: 0 auto; max-width: 14em; }
-.hero .lead { margin: 22px auto 0; max-width: 33em; font-size: 18px; line-height: 1.55; color: #4A4166; }
+.hero .lead { margin: 22px auto 0; max-width: 33em; font-size: 18px; line-height: 1.55; color: #4E3550; }
 .hero .cta-row { margin-top: 32px; display: flex; justify-content: center; }
 .intro-in { opacity: 0; filter: blur(14px); transform: translateY(14px); animation: introIn 1.4s var(--ease) forwards; animation-delay: var(--d, 0s); }
 @keyframes introIn { to { opacity: 1; filter: blur(0); transform: none; } }
@@ -336,12 +332,9 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
 /* ---------- 6 · closing call, on the gradient that rises as you arrive ---------- */
 .finale { padding: 240px 0 0; min-height: 900px; overflow: hidden; border-radius: 0 0 40px 40px; }
 .fin-bg { position: absolute; inset: 0; pointer-events: none; }
-.fin-bg .glow { position: absolute; inset: -4%; opacity: var(--tv, 0); transform: scale(calc(1.06 - var(--tv, 0) * .06)); background:
-  radial-gradient(42% 24% at 50% 78%, rgba(255, 200, 176, .75), transparent 70%),
-  radial-gradient(70% 40% at 24% 74%, rgba(214, 120, 190, .55), transparent 70%),
-  radial-gradient(60% 46% at 78% 66%, rgba(124, 92, 255, .6), transparent 70%),
-  linear-gradient(180deg, #0D0A14 0%, #1E1342 26%, #43287A 46%, #7D4596 62%, #D27E9F 76%, #F2AE93 86%, #E79A9A 100%); }
-.fin-bg .fade { position: absolute; left: 0; right: 0; top: 0; height: 34%; background: linear-gradient(180deg, rgb(var(--bg)) 0%, rgb(var(--bg) / 0) 100%); }
+.fin-bg { background: linear-gradient(180deg, rgb(var(--bg)) 0%, #120E2A 12%, #241A5C 25%, #4A3190 37%, #7E52A6 47%, #B678AE 57%, #E09AAE 69%, #F0AFA2 82%, #F3B69C 100%); opacity: var(--tv, 0); }
+.fin-bg canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s var(--ease); }
+.fin-bg canvas.on { opacity: 1; }
 .fin-in { position: relative; z-index: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .fin-in .app-icon { margin-bottom: 30px; }
 .fin-in h2 { color: #fff; }
@@ -351,17 +344,21 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
 .fin-in .tip a { color: #fff; text-underline-offset: 4px; }
 
 /* ---------- footer, revealed as the page lifts off it ---------- */
-.site-footer { position: fixed; z-index: 0; left: 0; right: 0; bottom: 0; padding-top: 84px; overflow: hidden; color: #F4F3F8; background: #08070B; }
+.site-footer { position: fixed; z-index: 0; left: 0; right: 0; bottom: 0; overflow: hidden; color: #F4F3F8; background: #08070B; }
 .site-footer.static { position: relative; }
 .site-footer .wrap { width: min(1160px, 100% - 48px); }
-.foot-cols { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 20px; }
-.foot-cols h4 { margin: 0 0 16px; font-size: 14px; font-weight: 500; color: #6F6D7E; }
-.foot-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.foot-cols a { text-decoration: none; font-size: 15.5px; }
+.foot-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; padding: 120px 0 40px; }
+.foot-about { max-width: 26em; }
+.foot-about .by { font: 500 18px/1.4 var(--title); letter-spacing: -.01em; color: #F4F3F8; }
+.foot-about .by span { margin: 0 6px; color: #6F6D7E; }
+.foot-about .legal { margin-top: 18px; font-size: 13.5px; line-height: 1.6; color: #7B788A; }
+.foot-about .copy { margin-top: 8px; font-size: 13.5px; color: #7B788A; }
+.foot-cols { display: flex; gap: 96px; padding-right: 8px; }
+.foot-cols h4 { margin: 0 0 18px; font-size: 14px; font-weight: 500; color: #6F6D7E; }
+.foot-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.foot-cols a { text-decoration: none; font-size: 16px; }
 .foot-cols a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.foot-about { max-width: 24em; color: #A09EB0; font-size: 15.5px; }
-.foot-about .legal { margin-top: 18px; font-size: 13px; line-height: 1.6; color: #6F6D7E; }
-.mega { width: var(--mw, 100%); margin: 28px auto calc(var(--mwpx, 1160px) * -0.17); -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 94%); mask-image: linear-gradient(180deg, #000 30%, transparent 94%); }
+.mega { width: var(--mw, 100%); margin: 20px auto calc(var(--mwpx, 1160px) * -0.17); -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 94%); mask-image: linear-gradient(180deg, #000 30%, transparent 94%); }
 .mega svg { width: 100%; height: auto; overflow: visible; }
 
 /* ---------- phones and small tablets ---------- */
@@ -371,7 +368,6 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
   .c3 + .c3 { box-shadow: inset 0 1px 0 rgb(var(--line) / var(--lineA)); }
   .tour { grid-template-columns: 1fr; gap: 40px; }
   .tour-r { height: 540px; }
-  .foot-cols { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
   body { font-size: 16px; }
@@ -402,14 +398,13 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
   .faq summary { font-size: 16px; padding: 20px 0; }
   .faq .ans p { padding-right: 8px; }
   .finale { padding-top: 170px; min-height: 760px; border-radius: 0 0 28px 28px; }
-  .foot-cols { grid-template-columns: 1fr 1fr; padding-bottom: 48px; }
-  .foot-about { grid-column: 1 / -1; }
-  .site-footer { padding-top: 72px; }
+  .foot-top { flex-direction: column; gap: 40px; padding: 80px 0 24px; }
+  .foot-cols { gap: 64px; }
   main { border-radius: 0 0 28px 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rv, .intro-in { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; transition: none !important; }
   .product { transform: none !important; }
-  .fin-bg .glow { opacity: 1; transform: none; }
+  .fin-bg { opacity: 1; }
 }

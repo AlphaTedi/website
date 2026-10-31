@@ -75,7 +75,8 @@
 
   /* ================= smooth scroll ================= */
   let lenis = null;
-  if (!reduce && window.Lenis) {
+  const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
+  if (!reduce && !touch && window.Lenis) {
     lenis = new window.Lenis({ lerp: 0.085, wheelMultiplier: 0.85, touchMultiplier: 0.9, autoRaf: true, anchors: { offset: -20 }, allowNestedScroll: true });
     window.lenis = lenis;
   }
@@ -156,7 +157,9 @@
       if (on && !reduce) raf = requestAnimationFrame(draw);
     };
     size(); draw(performance.now()); cv.classList.add('on');
-    watch(host, (vis) => { on = vis; if (on && !raf && !reduce) raf = requestAnimationFrame(draw); }, { threshold: 0 });
+    const still = reduce || touch;
+    if (still) on = false;
+    watch(host, (vis) => { if (still) return; on = vis; if (on && !raf) raf = requestAnimationFrame(draw); }, { threshold: 0 });
     if (follow) addEventListener('pointermove', (e) => { if (!on) return; const r = host.getBoundingClientRect(); mTarget = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; }, { passive: true });
     return { size: () => { size(); if (!raf) draw(performance.now()); } };
   }
@@ -202,7 +205,7 @@
     const rise = ease(clamp(p / 0.72));
     if (!reduce) {
       const rot = lerp(M.mobile ? 10 : 16, 0, rise), sc = lerp(M.mobile ? 0.96 : 0.93, 1, rise), ty = lerp(0, M.y1 - M.y0, rise);
-      product.style.transform = `perspective(1400px) translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(4)}) rotateX(${rot.toFixed(3)}deg)`;
+      product.style.transform = `perspective(1400px) translate3d(0, ${ty.toFixed(1)}px, 0) scale(${sc.toFixed(4)}) rotateX(${rot.toFixed(3)}deg)`;
       copy.style.transform = `translate3d(0, ${(ty * 0.4).toFixed(1)}px, 0)`;
       copy.style.opacity = (1 - clamp(rise / 0.55)).toFixed(3);
     }
@@ -581,6 +584,8 @@
   const ask = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
   function init() {
+    // once the intro has played, drop its class: nothing (no filter, no transform) stays on the moving Mac
+    $$('.intro-in').forEach((el) => el.addEventListener('animationend', () => el.classList.remove('intro-in'), { once: true }));
     $$('.eyes-logo').forEach((el) => O3.OttoLogo(el, { fill: 'currentColor', reach: 0.6 }));
     const hl = $('.hero-logo'); if (hl) O3.OttoLogo(hl, { fill: 'currentColor', reach: 0.45, follow: 0.12 });
     buildHero(); layoutHero(); liquids.forEach((l) => l.size());
@@ -591,7 +596,11 @@
     frame();
     addEventListener('scroll', ask, { passive: true });
     let t;
+    // on a phone the browser's toolbars fire resize while you scroll; only re-lay out for a real change
+    let lastW = innerWidth, lastH = innerHeight;
     addEventListener('resize', () => {
+      if (innerWidth === lastW && Math.abs(innerHeight - lastH) < 160) { ask(); return; }
+      lastW = innerWidth; lastH = innerHeight;
       layoutHero(); layoutFooter(); ask();
       clearTimeout(t); t = setTimeout(() => liquids.forEach((l) => l.size()), 200);
     });

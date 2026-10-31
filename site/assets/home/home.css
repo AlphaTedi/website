@@ -73,7 +73,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .hero .lead { margin: 22px auto 0; max-width: 33em; font-size: 18px; line-height: 1.55; color: #574C6E; }
 .hero .cta-row { margin-top: 32px; display: flex; justify-content: center; }
 .intro-in { opacity: 0; filter: blur(14px); transform: translateY(14px); animation: introIn 1.4s var(--ease) forwards; animation-delay: var(--d, 0s); }
-@keyframes introIn { to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes introIn { to { opacity: 1; filter: none; transform: none; } }
 
 .product-wrap { position: relative; z-index: 3; margin-top: 96px; }   /* the Mac slides over the copy as it rises */
 .product { width: min(1312px, 100% - 48px); max-width: 100%; margin: 0 auto; transform-origin: 50% 0; will-change: transform; transform: perspective(1400px) scale(.93) rotateX(16deg); }
@@ -81,7 +81,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .mac-screen { position: relative; overflow: hidden; border-radius: 13px; aspect-ratio: var(--vdw, 1440) / var(--vdh, 900); background: #1a1247; }
 .vd { position: absolute; left: 0; top: 0; width: calc(var(--vdw, 1440) * 1px); height: calc(var(--vdh, 900) * 1px); transform-origin: 0 0; }
 .vd .wall, .mode-screen .wall { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
-.menubar { position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 32px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; font: 500 13.5px/1 var(--sys); color: rgba(255, 255, 255, .92); background: rgba(10, 8, 24, .25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.menubar { position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 32px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; font: 500 13.5px/1 var(--sys); color: rgba(255, 255, 255, .92); background: rgba(10, 8, 24, .34); }
 .menubar > div { display: flex; align-items: center; gap: 9px; }
 .menubar > div:first-child span { font-weight: 400; margin-left: 10px; opacity: .9; }
 .menubar b { font-weight: 700; margin-left: 10px; }
@@ -112,6 +112,12 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
 .demo { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
 .demo .ot { width: 100%; }
 .ot-mcard { max-width: calc(100% - 24px); }
+.ot-mcard .mb { height: 28px; padding: 0 12px; gap: 6px; border-radius: 14px; }
+.ot-mcard .mb.join, .ot-mcard .mb.ghost { padding: 0 6px 0 12px; }
+.ot-mcard .mb kbd { min-width: 18px; height: 17px; }
+.ot-mcard .mb kbd + kbd { margin-left: -3px; }
+.ot .rk { display: inline-grid; place-items: center; }
+.ot .rk .ret { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- 1 · three blocks, each a piece of the real Otto UI ---------- */
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 24px; background: rgb(255 255 255 / .022); box-shadow: inset 0 0 0 1px rgb(var(--line) / var(--lineA)); }
@@ -228,7 +234,10 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
 .seg.small button { padding: 9px 18px; font-size: 14px; }
 .mode-stage { margin: 0 auto; max-width: 1120px; }
 .mode-screen { position: relative; overflow: hidden; aspect-ratio: 16 / 9.4; border-radius: 22px; background: #1a1247; box-shadow: 0 0 0 10px #0D0B13, 0 0 0 11px rgb(255 255 255 / .07), 0 60px 120px -40px rgba(0, 0, 0, .6); }
-.mode-screen .menubar { height: 30px; }
+.mode-screen .menubar { height: calc(32px * var(--nk, 1)); padding: 0 calc(20px * var(--nk, 1)); font-size: calc(13.5px * var(--nk, 1)); }
+.mode-screen .menubar > div { gap: calc(9px * var(--nk, 1)); }
+.mode-screen .menubar b { margin-left: calc(10px * var(--nk, 1)); }
+.mode-screen .menubar .apple { width: calc(13px * var(--nk, 1)); height: calc(16px * var(--nk, 1)); margin-top: calc(-2px * var(--nk, 1)); }
 .hw-notch { position: absolute; z-index: 1; left: 50%; top: 0; width: calc(185px * var(--nk, 1)); height: calc(32px * var(--nk, 1)); transform: translateX(-50%); background: #000; border-radius: 0 0 10px 10px; }
 .m-notch, .m-float { position: absolute; z-index: 2; left: 50%; transition: opacity .7s var(--ease), transform .8s var(--ease); }
 .m-notch { top: 0; width: min(620px, 60%); transform: translateX(-50%); }
@@ -383,7 +392,7 @@ main { position: relative; z-index: 1; background: rgb(var(--bg)); border-radius
   .hero .lead { font-size: 16.5px; }
   .product-wrap { margin-top: 56px; }
   .product { width: calc(100% - 24px); }
-  .mac { border-radius: 16px; padding: 6px; }
+  .mac { border-radius: 16px; padding: 6px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 30px 50px -24px rgba(10, 4, 40, .6); }
   .mac-screen { border-radius: 10px; }
   .sec { padding: 120px 0 30px; }
   .sec-head { margin-bottom: 40px; }

@@ -34,6 +34,8 @@
   };
   const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
   const MEET = '<svg class="meet" viewBox="0 0 87.5 72" aria-hidden="true"><path fill="#00832D" d="M49.5 36L58.03 45.75L69.5 53.08L71.5 36.06L69.5 19.42L57.81 25.86Z"/><path fill="#0066DA" d="M0 51.5V66C0 69.315 2.685 72 6 72H20.5L23.5 61.04L20.5 51.5L10.55 48.5Z"/><path fill="#E94235" d="M20.5 0L0 20.5L10.55 23.5L20.5 20.5L23.45 11.09Z"/><path fill="#2684FC" d="M0 20.5H20.5V51.5H0Z"/><path fill="#00AC47" d="M82.6 8.68L69.5 19.42V53.08L82.66 63.87C84.63 65.41 87.51 64.005 87.51 61.5V11C87.51 8.465 84.565 7.075 82.6 8.68Z M49.5 36V51.5H20.5V72H63.5C66.815 72 69.5 69.315 69.5 66V53.08Z"/><path fill="#FFBA00" d="M63.5 0H20.5V20.5H49.5V36L69.5 19.43V6C69.5 2.685 66.815 0 63.5 0Z"/></svg>';
+  /* the return key, drawn: that arrow character turns into an emoji on iOS */
+  const RET = '<svg class="ret" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5v6a4 4 0 0 1-4 4H5"/><path d="m9 10-5 5 5 5"/></svg>';
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   /* ---------------- section colours (SpaceTint, dark appearance) ---------------- */
@@ -272,7 +274,7 @@
             <h6>Design sync</h6>
             <div class="r3">
               <button class="mb">Notes</button>
-              <button class="mb join">Join <kbd>⌘</kbd><kbd>↩</kbd></button>
+              <button class="mb join">Join <kbd>⌘</kbd><kbd class="rk">${RET}</kbd></button>
               <button class="mb ghost">Snooze <kbd>S</kbd></button>
               <span class="avs"><span style="background:#D9CCF5;color:#5B3FA0">R</span><span style="background:#DDEBB8;color:#4C6420">W</span><span style="background:#F3CADB;color:#8A2F57">G</span><span class="plus">+1</span></span>
             </div>
@@ -321,7 +323,7 @@
             <input type="text" spellcheck="false" autocomplete="off" aria-label="${notes ? 'New note' : 'New to-do'}" value="${esc(d)}" ${this.o.interactive ? '' : 'tabindex="-1"'}>
             <span class="date"></span>
           </span>
-          <span class="hint">${notes ? 'Save <span class="ot-cap">↩</span>' : '<span class="sw">Switch space</span> <span class="ot-cap">Tab</span>'}</span>
+          <span class="hint">${notes ? 'Save <span class="ot-cap rk">' + RET + '</span>' : '<span class="sw">Switch space</span> <span class="ot-cap">Tab</span>'}</span>
         </div>`;
     }
 
@@ -757,7 +759,7 @@
         <div class="r1"><span class="tm">9:30 – 10:30</span><span class="cd">Starting in 2 min</span></div>
         <h6>Weekly product sync</h6>
         <div class="acts">
-          <button class="ot-join">Join <kbd>⌘</kbd><kbd>↩</kbd></button>
+          <button class="ot-join">Join <kbd>⌘</kbd><kbd class="rk">${RET}</kbd></button>
           <button class="ot-snooze">Snooze 5m</button>
           <span class="ot-avs"><span style="background:#B9D4FF;color:#1F3F7A">S</span><span style="background:#F7C6D9;color:#7A2346">M</span><span style="background:#C9EBC8;color:#1E5A2B">J</span><span class="plus">+2</span></span>
         </div>

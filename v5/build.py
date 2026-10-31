@@ -7,12 +7,13 @@ DRAFT = REPO / 'site/drafts/v5/index.html'      # the same page, kept at /drafts
 A = '/assets/home/'                              # its CSS, JS, fonts and the Lion wallpaper
 P = json.load(open(REPO / 'site/drafts/v3/shared/parts.json'))
 APPLE, LOGO, T = P['APPLE'], P['LOGO'], P['T']
-V = '9'
+V = '10'
 DMG = '/downloads/Otto.dmg'
 
 # ---------- content pulled from the live site, so the facts stay the same ----------
 FAQ = dict(re.findall(r'<summary>(.*?)</summary><p>(.*?)</p>', P['FAQ']))
 FAQ = {q: a.replace(' style="color:var(--lilac)"', '').replace('href="privacy.html"', 'href="/privacy.html"') for q, a in FAQ.items()}
+FAQ['Is Otto really free?'] = 'Yes. Otto is free to download and use, with no account and no paywall.'
 FAQ_TABS = [
     ('Basics', ['Is Otto really free?', 'Does my Mac need a notch?', 'Which languages does it speak?']),
     ('Privacy', ['Where is my data?', 'What does the anonymous usage data include?', 'Which calendars does it read?']),
@@ -255,7 +256,6 @@ FINALE = f'''
     <h2 class="t-l rv">Your notch is waiting.</h2>
     <p class="rv">Free, no account. Needs macOS 13 or later.</p>
     <div class="rv">{btn('Download for Mac', 'light big')}</div>
-    <p class="tip rv">Like it? <a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a>.</p>
   </div>
 </section>'''
 
@@ -269,7 +269,7 @@ FOOTER = f'''
     </div>
     <nav class="foot-cols" aria-label="Footer">
       <div><h4>Otto</h4><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li><li><a href="https://buymeacoffee.com/YOUR_HANDLE">Buy me a coffee</a></li></ul></div>
+      <div><h4>More</h4><ul><li><a href="/privacy.html">Privacy policy</a></li><li><a href="mailto:marcello.zanetta1@gmail.com">Contact</a></li></ul></div>
     </nav>
   </div>
   <div class="wrap"><div class="mega" aria-hidden="true">

@@ -7,7 +7,10 @@
  *
  * No cookies, nothing in the browser, no third party. To tell people apart within one day, the IP
  * address and browser are mixed with a random secret that changes every day and is then thrown away,
- * together with that day's fingerprints: only the daily totals are kept.
+ * together with that day's fingerprints. What is kept: the daily totals, and for each visit or
+ * download its time, whether it was that person's first of the day, the site that linked to it, the
+ * country and the kind of device (Mac, iPhone, Windows…) — never an IP address or anything that
+ * points back to one person. Those single hits are kept 90 days.
  *
  * The numbers are at /stats, behind a password set as the Worker secret STATS_KEY
  * (Cloudflare dashboard › Workers › otto-site › Settings › Variables and Secrets), and the daily
@@ -45,22 +48,33 @@ export class Stats extends DurableObject {
   // today's secret; on a new day, forget yesterday's fingerprints and the secret they were made with
   salt(day) {
     const cur = this.sql.exec(`SELECT v FROM meta WHERE k = 'day'`).toArray()[0];
-    if (cur && cur.v === day) return this.sql.exec(`SELECT v FROM meta WHERE k = 'salt'`).one().v;
+    if (cur && cur.v === day) return { salt: this.sql.exec(`SELECT v FROM meta WHERE k = 'salt'`).one().v, newDay: false };
     const salt = crypto.randomUUID() + crypto.randomUUID();
     this.sql.exec(`DELETE FROM seen`);
     this.sql.exec(`INSERT OR REPLACE INTO meta (k, v) VALUES ('day', ?), ('salt', ?)`, day, salt);
-    return salt;
+    return { salt, newDay: true };
   }
 
-  async hit(kind, who) {
+  async hit(kind, who, info = {}) {
     const day = dayOf();
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(this.salt(day) + '|' + who));
+    const { salt, newDay } = this.salt(day);
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + '|' + who));
     const hash = [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, '0')).join('');
     const fresh = this.sql.exec(`INSERT OR IGNORE INTO seen (kind, hash) VALUES (?, ?)`, kind, hash).rowsWritten > 0 ? 1 : 0;
     this.sql.exec(`INSERT OR IGNORE INTO daily (day) VALUES (?)`, day);
     if (kind === 'view') this.sql.exec(`UPDATE daily SET views = views + 1, visitors = visitors + ? WHERE day = ?`, fresh, day);
     else this.sql.exec(`UPDATE daily SET downloads = downloads + 1, downloaders = downloaders + ? WHERE day = ?`, fresh, day);
     await this.mirror(day);
+    await this.log(kind, fresh, info, newDay);
+  }
+
+  // one row per hit in D1 (table hits), for the hour-by-hour views: no fingerprint, no IP.
+  async log(kind, fresh, { source = null, country = null, device = null } = {}, newDay = false) {
+    if (!this.env.DB) return;
+    const writes = [this.env.DB.prepare(`INSERT INTO hits (ts, kind, fresh, source, country, device) VALUES (?, ?, ?, ?, ?, ?)`)
+      .bind(new Date().toISOString(), kind, fresh, source, country, device)];
+    if (newDay) writes.push(this.env.DB.prepare(`DELETE FROM hits WHERE ts < ?`).bind(new Date(Date.now() - 90 * 86400000).toISOString()));
+    await this.env.DB.batch(writes);
   }
 
   // copy the day's totals to the D1 database "otto-site-stats", which the dashboard in Claude reads.
@@ -81,6 +95,28 @@ export class Stats extends DurableObject {
 }
 
 const counter = (env) => env.STATS.get(env.STATS.idFromName('ottotofive.com'));
+
+/* ---------------- what is noted about a hit ---------------- */
+const clean = (s) => (s || '').toLowerCase().replace(/^www\./, '').replace(/[^a-z0-9.\-_]/g, '').slice(0, 60) || null;
+// where a visit came from: a ?ref= / ?utm_source= on the link, else the linking site's name (not its page)
+function sourceOf(request, url) {
+  const tagged = clean(url.searchParams.get('ref') || url.searchParams.get('utm_source'));
+  if (tagged) return tagged;
+  try {
+    const host = clean(new URL(request.headers.get('referer') || '').hostname);
+    return host && host !== url.hostname.replace(/^www\./, '') ? host : null;
+  } catch { return null; }
+}
+// the kind of device, from the browser's name: Otto only installs on a Mac
+function deviceOf(ua) {
+  if (/iPhone|iPod/.test(ua)) return 'iphone';
+  if (/iPad/.test(ua)) return 'ipad';
+  if (/Android/.test(ua)) return 'android';
+  if (/Macintosh|Mac OS X/.test(ua)) return 'mac';
+  if (/Windows/.test(ua)) return 'windows';
+  if (/CrOS|Linux|X11/.test(ua)) return 'linux';
+  return 'other';
+}
 
 /* ---------------- what counts ---------------- */
 function kindOf(request, url, res) {
@@ -237,9 +273,11 @@ export default {
       : await env.ASSETS.fetch(request);
     const kind = kindOf(request, url, res);
     if (kind) {
-      const who = (request.headers.get('cf-connecting-ip') || '') + '|' + (request.headers.get('user-agent') || '');
+      const ua = request.headers.get('user-agent') || '';
+      const who = (request.headers.get('cf-connecting-ip') || '') + '|' + ua;
+      const info = { source: kind === 'view' ? sourceOf(request, url) : null, country: clean(request.cf?.country), device: deviceOf(ua) };
       // counted after the answer has gone out, and never in its way
-      ctx.waitUntil(counter(env).hit(kind, who).catch(() => {}));
+      ctx.waitUntil(counter(env).hit(kind, who, info).catch(() => {}));
     }
     return res;
   },

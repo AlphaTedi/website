@@ -1,6 +1,15 @@
 {
-  // Cloudflare Workers, static assets only: publishes the site/ folder
+  // Cloudflare Workers: publishes the site/ folder. A small Worker (worker/index.js) runs first only
+  // for the home page, the download and /stats, to count visits and downloads.
   "name": "otto-site",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "./site", "not_found_handling": "404-page" }
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/", "/index.html", "/downloads/*", "/stats", "/stats/*"]
+  },
+  "durable_objects": { "bindings": [{ "name": "STATS", "class_name": "Stats" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Stats"] }]
 }

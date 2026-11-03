@@ -10,7 +10,8 @@
  * together with that day's fingerprints: only the daily totals are kept.
  *
  * The numbers are at /stats, behind a password set as the Worker secret STATS_KEY
- * (Cloudflare dashboard › Workers › otto-site › Settings › Variables and Secrets).
+ * (Cloudflare dashboard › Workers › otto-site › Settings › Variables and Secrets), and the daily
+ * totals are mirrored to the D1 database "otto-site-stats" for the dashboard in Claude.
  */
 import { DurableObject } from 'cloudflare:workers';
 
@@ -55,6 +56,19 @@ export class Stats extends DurableObject {
     this.sql.exec(`INSERT OR IGNORE INTO daily (day) VALUES (?)`, day);
     if (kind === 'view') this.sql.exec(`UPDATE daily SET views = views + 1, visitors = visitors + ? WHERE day = ?`, fresh, day);
     else this.sql.exec(`UPDATE daily SET downloads = downloads + 1, downloaders = downloaders + ? WHERE day = ?`, fresh, day);
+    await this.mirror(day);
+  }
+
+  // copy the day's totals to the D1 database "otto-site-stats", which the dashboard in Claude reads.
+  // Only totals go there; the fingerprints and the day's secret never leave this object.
+  // MAX(): two writes landing out of order can't make a number go back.
+  async mirror(day) {
+    if (!this.env.DB) return;
+    const r = this.sql.exec(`SELECT day, visitors, views, downloaders, downloads FROM daily WHERE day = ?`, day).one();
+    await this.env.DB.prepare(`INSERT INTO daily (day, visitors, views, downloaders, downloads) VALUES (?1, ?2, ?3, ?4, ?5)
+      ON CONFLICT(day) DO UPDATE SET visitors = MAX(visitors, excluded.visitors), views = MAX(views, excluded.views),
+      downloaders = MAX(downloaders, excluded.downloaders), downloads = MAX(downloads, excluded.downloads)`)
+      .bind(r.day, r.visitors, r.views, r.downloaders, r.downloads).run();
   }
 
   days() {

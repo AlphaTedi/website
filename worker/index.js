@@ -17,6 +17,10 @@ import { DurableObject } from 'cloudflare:workers';
 
 const TZ = 'Europe/Amsterdam';
 const DMG = '/downloads/Otto.dmg';
+// The DMG itself lives on GitHub: every Otto release uploads it as Otto.dmg, and this address always
+// answers with the newest one. /downloads/Otto.dmg counts the download and sends people there, so the
+// site never has to change for a release.
+const LATEST = 'https://github.com/AlphaTedi/Otto/releases/latest/download/Otto.dmg';
 // link previews, crawlers, monitors and scripts: not people
 const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|linkedin|skype|curl|wget|python|httpie|axios|node-fetch|undici|go-http|okhttp|java\/|libwww|headless|phantom|puppeteer|playwright|lighthouse|pagespeed|gtmetrix|pingdom|uptime|monitor|statuscake|scan|check/i;
 
@@ -94,7 +98,7 @@ function kindOf(request, url, res) {
     // a resumed download asks for the rest of the file: that's the same download
     const range = h.get('range');
     if (range && !/^bytes=0-/.test(range)) return null;
-    return res.status === 200 || res.status === 206 ? 'download' : null;
+    return res.status === 302 ? 'download' : null;
   }
   return null;
 }
@@ -227,7 +231,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === '/stats' || url.pathname === '/stats/') return stats(request, env);
-    const res = await env.ASSETS.fetch(request);
+    // the download: counted here, then handed to GitHub's latest release (never cached, so every click counts)
+    const res = url.pathname === DMG
+      ? new Response(null, { status: 302, headers: { Location: LATEST, 'Cache-Control': 'no-store' } })
+      : await env.ASSETS.fetch(request);
     const kind = kindOf(request, url, res);
     if (kind) {
       const who = (request.headers.get('cf-connecting-ip') || '') + '|' + (request.headers.get('user-agent') || '');
